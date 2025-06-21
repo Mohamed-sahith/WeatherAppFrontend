@@ -1,0 +1,53 @@
+﻿@inherits LayoutComponentBase
+@using Blazored.SessionStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using WeatherAppFrontend.Services
+@using WeatherAppFrontend.Auth
+@inject ISessionStorageService Session
+@inject AuthService AuthService
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@using MudBlazor
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div>
+
+    <main>
+        <MudAppBar Elevation="2" Class="mud-appbar-fixed">
+            <MudText Typo="Typo.h6" Class="ml-4">⛅WeatherApp</MudText>
+            @if (!string.IsNullOrEmpty(userEmail) && !IsLoginOrRegisterPage)
+            {
+                <MudSpacer />
+                <MudText Typo="Typo.body2">@userEmail</MudText>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" Class="ms-2" OnClick="Logout">Logout</MudButton>
+            }
+        </MudAppBar>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private string? userEmail;
+
+    private bool IsLoginOrRegisterPage =>
+        Navigation.Uri.Contains("login", StringComparison.OrdinalIgnoreCase) ||
+        Navigation.Uri.Contains("register", StringComparison.OrdinalIgnoreCase);
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = await Session.GetItemAsync<string>("email");
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
+        Navigation.NavigateTo("/login", true);
+    }
+}
