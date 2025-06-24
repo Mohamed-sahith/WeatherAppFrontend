@@ -68,8 +68,21 @@ public class WeatherService
     {
         try
         {
-            var response = await _http.GetFromJsonAsync<List<string>>("api/UserData/cities");
-            return response ?? new List<string>();
+            var response = await _http.GetAsync("api/UserData/cities");
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error fetching favorites for {email}: Status {response.StatusCode}, Content: {errorContent}");
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // Optionally trigger re-login or notify user
+                    Console.WriteLine("Unauthorized access. Token may be missing or invalid.");
+                }
+                return new List<string>();
+            }
+
+            var cities = await response.Content.ReadFromJsonAsync<List<string>>();
+            return cities ?? new List<string>();
         }
         catch (HttpRequestException ex)
         {

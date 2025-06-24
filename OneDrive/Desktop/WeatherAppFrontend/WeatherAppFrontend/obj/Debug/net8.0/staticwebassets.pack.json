@@ -33,6 +33,10 @@
       "PackagePath": "staticwebassets\\index.html"
     },
     {
+      "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\rainy.ico",
+      "PackagePath": "staticwebassets\\rainy.ico"
+    },
+    {
       "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\sample-data\\weather.json",
       "PackagePath": "staticwebassets\\sample-data\\weather.json"
     },

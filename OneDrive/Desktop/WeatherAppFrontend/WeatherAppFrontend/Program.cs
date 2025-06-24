@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WeatherAppFrontend;
-using Blazored.SessionStorage;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using WeatherAppFrontend.Auth;
 using WeatherAppFrontend.Services;
@@ -23,7 +23,7 @@ builder.Services.AddHttpClient("API", client =>
 .AddHttpMessageHandler<AuthHeaderHandler>();
 
 // Session storage for JWT & user data
-builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddBlazoredLocalStorage();
 
 // Custom authentication setup
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthProvider>();

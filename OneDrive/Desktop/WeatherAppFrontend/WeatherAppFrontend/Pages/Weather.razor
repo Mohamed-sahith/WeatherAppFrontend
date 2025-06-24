@@ -3,16 +3,17 @@
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
-@using Blazored.SessionStorage
+@using Blazored.LocalStorage
 @using WeatherAppFrontend.Services
 @using WeatherAppFrontend.Auth
 @using WeatherAppFrontend.Models.DTOs
-@inject ISessionStorageService Session
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject AuthService AuthService
 @inject WeatherService WeatherService
 @inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager Navigation
 @inject IHttpClientFactory ClientFactory
+@inject ISnackbar Snackbar
 @inject IJSRuntime JSRuntime
 @using MudBlazor
 
@@ -27,22 +28,8 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #667eea 50%, #764ba2 75%, #667eea 100%);
-        background-size: 400% 400%;
-        animation: weatherGradient 20s ease infinite;
+        background: linear-gradient(135deg, #1e2a78 0%, #3e2b5f 25%, #1e2a78 50%, #3e2b5f 75%, #1e2a78 100%);
         z-index: -1;
-    }
-
-    @@keyframes weatherGradient {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
     }
 
     .glass-container {
@@ -54,11 +41,11 @@
         transition: all 0.3s ease;
     }
 
-    .glass-container:hover {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    }
+        .glass-container:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
 
     .current-weather-card {
         background: rgba(255, 255, 255, 0.1);
@@ -72,41 +59,45 @@
         transition: all 0.3s ease;
     }
 
-    .current-weather-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    }
+        .current-weather-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 1);
+        }
 
     .forecast-card {
-        background: rgba(255, 255, 255, 0.08);
+        background: 1.5rem;
         backdrop-filter: blur(20px);
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        padding: 1.5rem;
+        border-radius: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 0, 255);
+        box-shadow: 0 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
         text-align: center;
         transition: all 0.3s ease;
         height: 100%;
     }
 
-    .forecast-card:hover {
-        transform: translateY(-3px);
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
+        .forecast-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
 
     .glass-input {
         background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(15px) !important;
+        backdrop-filter: blur(15px);
         border-radius: 12px !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         color: white !important;
     }
 
-    .glass-input:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
-    }
+        .glass-input:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 0.3) !important;
+        }
+
+        .glass-input input::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
 
     .glass-button {
         background: rgba(255, 255, 255, 0.15) !important;
@@ -118,11 +109,11 @@
         transition: all 0.3s ease !important;
     }
 
-    .glass-button:hover {
-        background: rgba(255, 255, 255, 0.25) !important;
-        border-color: rgba(255, 255, 255, 0.4) !important;
-        transform: translateY(-2px);
-    }
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            transform: translateY(-2px);
+        }
 
     .heart-button {
         background: rgba(255, 20, 147, 0.2) !important;
@@ -138,31 +129,81 @@
         left: 2rem !important;
     }
 
-    .heart-button:hover {
-        background: rgba(255, 20, 147, 0.3) !important;
-        border-color: rgba(255, 20, 147, 0.5) !important;
-        transform: scale(1.1);
-    }
+        .heart-button:hover {
+            background: rgba(255, 20, 147, 0.3) !important;
+            border-color: rgba(255, 20, 147, 0.5) !important;
+            transform: scale(1.1);
+        }
 
-    .heart-button.favorited {
-        background: rgba(255, 20, 147, 0.4) !important;
-        color: #ff69b4 !important;
-    }
+        .heart-button.favorited {
+            background: rgba(255, 20, 147, 0.4) !important;
+            color: #ff69b4 !important;
+        }
 
-    .glass-sidebar {
+    .glass-nav-menu {
         background: rgba(255, 255, 255, 0.12);
         backdrop-filter: blur(30px);
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.2);
         box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
         position: fixed;
-        top: 20px;
-        right: 20px;
+        top: 64px; /* Adjusted to account for fixed app bar height */
+        left: 20px;
         width: 320px;
-        height: calc(100vh - 40px);
+        max-height: calc(100vh - 84px); /* Adjusted to account for app bar and padding */
         overflow-y: auto;
         z-index: 1200;
+        padding: 2rem;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        display: none; /* Hidden by default */
     }
+
+        .glass-nav-menu.show {
+            display: block; /* Show only when class 'show' is added */
+            transform: translateX(0);
+        }
+
+    .glass-favorites-section {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 1.5rem;
+        margin-top: 1rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+        .glass-favorites-section.show {
+            max-height: 500px;
+            padding: 1.5rem;
+        }
+
+        .glass-favorites-section:not(.show) {
+            padding: 0 1.5rem;
+        }
+
+    .nav-menu-item {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 16px;
+        margin: 8px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .nav-menu-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
 
     .glass-list-item {
         background: rgba(255, 255, 255, 0.08);
@@ -175,11 +216,11 @@
         cursor: pointer;
     }
 
-    .glass-list-item:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-        transform: translateX(5px);
-    }
+        .glass-list-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
 
     .user-info-glass {
         background: rgba(255, 255, 255, 0.08);
@@ -202,10 +243,10 @@
         font-weight: 600 !important;
     }
 
-    .logout-button:hover {
-        background: rgba(255, 69, 58, 0.3) !important;
-        border-color: rgba(255, 69, 58, 0.5) !important;
-    }
+        .logout-button:hover {
+            background: rgba(255, 69, 58, 0.3) !important;
+            border-color: rgba(255, 69, 58, 0.5) !important;
+        }
 
     .title-text {
         color: white;
@@ -244,10 +285,6 @@
         color: white !important;
     }
 
-    .mud-input-label {
-        color: rgba(255, 255, 255, 0.7) !important;
-    }
-
     .mud-input-underline:before,
     .mud-input-underline:hover:before {
         border-bottom-color: rgba(255, 255, 255, 0.3) !important;
@@ -257,26 +294,15 @@
         border-bottom-color: rgba(255, 255, 255, 0.8) !important;
     }
 
-    .favorites-container {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-    }
-
-    .favorites-container.show {
-        max-height: 500px;
-    }
-
-    .city-image-container {
-        margin-top: 2rem;
-    }
-
     .city-image {
-        width: 100%;
-        height: 200px;
+        width: 700px;
+        height: 350px;
         border-radius: 16px;
         object-fit: cover;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        float: right;
+        margin-left: 1rem;
+        max-width: 100%;
     }
 
     .attribution {
@@ -286,14 +312,29 @@
         margin-top: 0.5rem;
     }
 
-    .attribution a {
-        color: #667eea;
-        text-decoration: none;
+        .attribution a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+            .attribution a:hover {
+                text-decoration: underline;
+            }
+
+    .unit-toggle-button {
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 25px !important;
+        color: white !important;
+        font-weight: 500 !important;
+        padding: 0 16px !important;
     }
 
-    .attribution a:hover {
-        text-decoration: underline;
-    }
+        .unit-toggle-button:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
 
     @@media (max-width: 768px) {
         .search-container {
@@ -301,119 +342,83 @@
             width: 100%;
         }
 
-        .search-container > * {
+            .search-container > * {
+                width: 100%;
+            }
+
+        .glass-nav-menu {
+            width: 280px;
+        }
+
+        .current-weather-card {
+            padding: 1.5rem;
+        }
+
+        .temperature-display {
+            font-size: 3rem;
+        }
+
+        .city-image {
             width: 100%;
+            height: auto;
+            float: none;
+            margin-left: 0;
         }
     }
 </style>
 
-<!-- Animated Background -->
-<div class="weather-bg"></div>
+<!-- Authentication Guard -->
+@if (!isAuthorized)
+{
+    <MudText Typo="Typo.body1" Style="color: white; text-align: center; padding: 2rem;">
+        Checking authentication...
+    </MudText>
+}
+else
+{
+    <!-- Static Background -->
+    <div class="weather-bg"></div>
 
-<MudContainer MaxWidth="MaxWidth.Large" Style="padding-top: 2rem; position: relative; z-index: 10;">
-    <!-- Header Section -->
-    <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
-        <MudGrid Spacing="3" AlignItems="Center">
-            <MudItem xs="12" md="8">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <MudIcon Icon="@Icons.Material.Filled.WbCloudy"
-                             Style="font-size: 3rem; color: white; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.3));" />
-                    <MudText Typo="Typo.h3" Class="title-text">
-                        Weather Dashboard
-                    </MudText>
-                </div>
-            </MudItem>
-
-            @if (email != null)
-            {
-                <MudItem xs="12" md="4">
-                    <div class="user-info-glass">
-                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="color: rgba(255, 255, 255, 0.8);" />
-                        <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.9); font-weight: 500;">
-                            @email
-                        </MudText>
-                        <MudButton Class="logout-button"
-                                   Size="Size.Small"
-                                   OnClick="Logout">
-                            <MudIcon Icon="@Icons.Material.Filled.Logout" Style="margin-right: 4px;" />
-                            Logout
-                        </MudButton>
-                    </div>
-                </MudItem>
-            }
-        </MudGrid>
-    </div>
-
-    <!-- Search Section -->
-    <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
-        <div class="search-container">
-            <MudTextField @bind-Value="city"
-                          Label="Enter city name"
-                          Variant="Variant.Outlined"
-                          Class="glass-input"
-                          AdornmentIcon="@Icons.Material.Filled.LocationOn"
-                          Adornment="Adornment.Start"
-                          Style="min-width: 300px;" />
-
-            <MudButton Variant="Variant.Filled"
-                       Class="glass-button"
-                       OnClick="GetForecast"
-                       Style="min-width: 150px; height: 56px;">
-                <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" />
-                Get Weather
-            </MudButton>
-
-            <MudButton Variant="Variant.Outlined"
-                       Class="glass-button"
-                       OnClick="ToggleFavorites"
-                       Style="min-width: 120px; height: 56px;">
-                <MudIcon Icon="@Icons.Material.Filled.Favorite" Class="mr-2" />
-                Favorites
-            </MudButton>
+    <!-- Navigation Menu -->
+    <div class="glass-nav-menu @(showNavMenu ? "show" : "")">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <MudText Typo="Typo.h6" Style="color: white; font-weight: 700;">
+                <MudIcon Icon="@Icons.Material.Filled.Menu" Class="mr-2" />
+                Menu
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Style="color: white;" OnClick="ToggleNavMenu" />
         </div>
-    </div>
 
-    <!-- Favorites Section -->
-    <div class="favorites-container @(showFavorites ? "show" : "")">
-        <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
-            <MudText Typo="Typo.h6" Style="color: white; font-weight: 700; margin-bottom: 1rem;">
-                <MudIcon Icon="@Icons.Material.Filled.Favorite" Class="mr-2" />
+        <div class="nav-menu-item" @onclick="ToggleFavoritesSection">
+            <MudIcon Icon="@Icons.Material.Filled.Favorite" Style="color: #ff1493;" />
+            <MudText Typo="Typo.body1" Style="color: white; font-weight: 500;">
                 Favorite Cities
             </MudText>
+            <MudIcon Icon="@(showFavoritesSection ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Style="color: rgba(255, 255, 255, 0.7); margin-left: auto;" />
+        </div>
 
+        <div class="glass-favorites-section @(showFavoritesSection ? "show" : "")">
             @if (favorites.Count > 0)
             {
-                <MudGrid Spacing="2">
-                    @foreach (var fav in favorites)
-                    {
-                        <MudItem xs="12" sm="6" md="4">
-                            <div class="glass-list-item" style="display: flex; justify-content: space-between; align-items: center;">
-                                <MudText Typo="Typo.body1"
-                                         @onclick="@(() => SelectFavorite(fav))"
-                                         Style="color: white; font-weight: 500; cursor: pointer; flex: 1;">
-                                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Style="font-size: 1.2rem;" />
-                                    @fav
-                                </MudText>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                               Style="color: rgba(255, 69, 58, 0.8);"
-                                               Size="Size.Small"
-                                               OnClick="@(() => RemoveFromFavorites(fav))" />
-                            </div>
-                        </MudItem>
-                    }
-                </MudGrid>
+                @foreach (var fav in favorites)
+                {
+                    <div class="glass-list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                        <MudText Typo="Typo.body1" @onclick="@(() => SelectFavorite(fav))" Style="color: white; font-weight: 500; cursor: pointer; flex: 1;">
+                            <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Style="font-size: 1.2rem;" />
+                            @fav
+                        </MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Style="color: rgba(255, 69, 58, 0.8);" Size="Size.Small" OnClick="@(() => RemoveFromFavorites(fav))" />
+                    </div>
+                }
             }
             else
             {
                 <div style="text-align: center; padding: 2rem;">
-                    <MudIcon Icon="@Icons.Material.Filled.FavoriteBorder"
-                             Style="font-size: 3rem; color: rgba(255, 255, 255, 0.4); margin-bottom: 1rem;" />
-                    <MudText Typo="Typo.body1"
-                             Style="color: rgba(255, 255, 255, 0.6);">
+                    <MudIcon Icon="@Icons.Material.Filled.FavoriteBorder" Style="font-size: 3rem; color: rgba(255, 255, 255, 0.4); margin-bottom: 1rem;" />
+                    <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.6);">
                         No favorite cities added yet
                     </MudText>
-                    <MudText Typo="Typo.body2"
-                             Style="color: rgba(255, 255, 255, 0.5); margin-top: 0.5rem;">
+                    <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.5); margin-top: 0.5rem;">
                         Search for a city and add it to favorites!
                     </MudText>
                 </div>
@@ -421,165 +426,205 @@
         </div>
     </div>
 
-    <!-- Current Weather Section -->
-    @if (currentWeather != null)
-    {
-        <div class="current-weather-card" style="margin-bottom: 2rem;">
-            <!-- Add to Favorites Button positioned at top-left -->
-            <MudButton Class="@(IsCityFavorited() ? "heart-button favorited" : "heart-button")"
-                       OnClick="ToggleFavorite"
-                       Title="@(IsCityFavorited() ? "Remove from favorites" : "Add to favorites")">
-                <MudIcon Icon="@(IsCityFavorited() ? Icons.Material.Filled.Favorite : Icons.Material.Filled.FavoriteBorder)" />
-            </MudButton>
+    <MudContainer MaxWidth="MaxWidth.Large" Style="padding-top: 64px; position: relative; z-index: 10; margin-left: 60px;">
+        <!-- Search Section with Unit Toggle -->
+        <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
+            <div class="search-container">
+                <MudTextField @bind-Value="city" Placeholder="Enter city name" Variant="Variant.Outlined" Class="glass-input" AdornmentIcon="@Icons.Material.Filled.LocationOn" Adornment="Adornment.Start" Style="min-width: 300px;" />
 
-            <MudGrid Spacing="4" AlignItems="Center">
-                <MudItem xs="12" md="6">
-                    <div style="text-align: center;">
-                        <MudText Typo="Typo.h4" Class="title-text" Style="margin-bottom: 0.5rem;">
-                            @currentWeather.Name
-                        </MudText>
-                        <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem;">
-                            @DateTime.Now.ToString("MMMM dd, yyyy")
-                        </MudText>
+                <MudButton Variant="Variant.Filled" Class="glass-button" OnClick="GetForecast" Style="min-width: 150px; height: 56px;">
+                    <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" /> Get Weather
+                </MudButton>
 
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;">
-                            <MudImage Src="@($"https://openweathermap.org/img/wn/{currentWeather.Icon}@4x.png")"
-                                      Alt="@currentWeather.Summary"
-                                      Height="120"
-                                      Class="weather-icon" />
-                            <div>
-                                <div class="temperature-display">@currentWeather.Temperature°</div>
-                                <MudText Typo="Typo.h6" Style="color: rgba(255, 255, 255, 0.9); text-transform: capitalize;">
-                                    @currentWeather.Summary
-                                </MudText>
-                            </div>
-                        </div>
-                    </div>
-                </MudItem>
+                <MudButton Variant="Variant.Filled" Class="glass-button" OnClick="ToggleNavMenu" Style="min-width: 150px; height: 56px;">
+                    <MudIcon Icon="@Icons.Material.Filled.Favorite" Class="mr-2" /> Favorite Cities
+                </MudButton>
 
-                <MudItem xs="12" md="6">
-                    <div class="weather-details">
-                        <MudGrid Spacing="3">
-                            <MudItem xs="6">
-                                <div style="text-align: center;">
-                                    <MudIcon Icon="@Icons.Material.Filled.Thermostat" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
-                                    <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Feels Like</MudText>
-                                    <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.FeelsLike°C</MudText>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="6">
-                                <div style="text-align: center;">
-                                    <MudIcon Icon="@Icons.Material.Filled.Water" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
-                                    <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Humidity</MudText>
-                                    <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.Humidity%</MudText>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="6">
-                                <div style="text-align: center;">
-                                    <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
-                                    <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Visibility</MudText>
-                                    <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@(currentWeather.Visibility / 1000)km</MudText>
-                                </div>
-                            </MudItem>
-                            <MudItem xs="6">
-                                <div style="text-align: center;">
-                                    <MudIcon Icon="@Icons.Material.Filled.Air" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
-                                    <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Wind Speed</MudText>
-                                    <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.WindSpeed m/s</MudText>
-                                </div>
-                            </MudItem>
-                        </MudGrid>
-                    </div>
-                </MudItem>
-            </MudGrid>
-        </div>
-
-        <!-- City Image Section -->
-        <div class="city-image-container">
-            <div class="glass-container" style="padding: 2rem;">
-                @if (cityImage != null)
-                {
-                    <img src="@cityImage.ImageUrl" alt="@cityImage.AltDescription" class="city-image" />
-                    <div class="attribution">
-                        Photo by <a href="@cityImage.PhotographerLink?utm_source=WeatherApp&utm_medium=referral">@cityImage.Photographer</a> on <a href="https://unsplash.com?utm_source=WeatherApp&utm_medium=referral">Unsplash</a>
-                    </div>
-                }
-                else if (showEmptyMessage)
-                {
-                    <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.6); text-align: center;">
-                        No image available for @city
-                    </MudText>
-                }
+                <MudButton Class="unit-toggle-button" OnClick="ToggleUnit" Style="height: 56px;">
+                    @unitDisplay
+                </MudButton>
             </div>
         </div>
-    }
 
-    <!-- 5-Day Forecast Section -->
-    @if (forecasts?.Count > 0)
-    {
-        <div class="glass-container" style="padding: 2rem;">
-            <MudText Typo="Typo.h5"
-                     Align="Align.Center"
-                     Class="title-text mb-6">
-                5-Day Forecast
-            </MudText>
+        <!-- Current Weather Section with City Image -->
+        @if (currentWeather != null)
+        {
+            <div class="current-weather-card" style="margin-bottom: 2rem;">
+                <!-- Add to Favorites Button positioned at top-left -->
+                <MudButton Class="@(IsCityFavorited() ? "heart-button favorited" : "heart-button")" OnClick="ToggleFavorite" Title="@(IsCityFavorited() ? "Remove from favorites" : "Add to favorites")">
+                    <MudIcon Icon="@(IsCityFavorited() ? Icons.Material.Filled.Favorite : Icons.Material.Filled.FavoriteBorder)" />
+                </MudButton>
 
-            <MudGrid Spacing="3">
-                @{
-                    var startDate = DateTime.Today.AddDays(1); // Start from tomorrow
-                    var forecastDays = forecasts
+                <MudGrid Spacing="4" AlignItems="Center">
+                    <MudItem xs="12" md="4">
+                        <div style="text-align: center;">
+                            <MudText Typo="Typo.h4" Class="title-text" Style="margin-bottom: 0.5rem;">
+                                @currentWeather.Name
+                            </MudText>
+                            <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem;">
+                                @DateTime.Now.ToString("MMMM dd, yyyy")
+                            </MudText>
+
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;">
+                                <MudImage Src="@($"https://openweathermap.org/img/wn/{currentWeather.Icon}@4x.png")" Alt="@currentWeather.Summary" Height="120" Class="weather-icon" />
+                                <div>
+                                    <div class="temperature-display">@GetTemperatureDisplay(currentWeather.Temperature)@unitSymbol</div>
+                                    <MudText Typo="Typo.h6" Style="color: rgba(255, 255, 255, 0.9); text-transform: capitalize;">
+                                        @currentWeather.Summary
+                                    </MudText>
+                                </div>
+                            </div>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="4">
+                        <div class="weather-details">
+                            <MudGrid Spacing="3">
+                                <MudItem xs="6">
+                                    <div style="text-align: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Thermostat" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
+                                        <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Feels Like</MudText>
+                                        <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@GetTemperatureDisplay(currentWeather.FeelsLike)@unitSymbol</MudText>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div style="text-align: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Water" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
+                                        <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Humidity</MudText>
+                                        <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.Humidity%</MudText>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div style="text-align: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
+                                        <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Visibility</MudText>
+                                        <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@(currentWeather.Visibility / 1000)km</MudText>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div style="text-align: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Air" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
+                                        <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Wind Speed</MudText>
+                                        <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.WindSpeed m/s</MudText>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div style="text-align: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Compress" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
+                                        <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Pressure</MudText>
+                                        <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.Pressure hPa</MudText>
+                                    </div>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <div style="text-align: center;">
+                                        <MudIcon Icon="@Icons.Material.Filled.WbSunny" Style="color: rgba(255, 255, 255, 0.8); font-size: 2rem; margin-bottom: 0.5rem;" />
+                                        <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">Sunrise</MudText>
+                                        <MudText Typo="Typo.h6" Style="color: white; font-weight: 600;">@currentWeather.Sunrise.ToString("HH:mm")</MudText>
+                                    </div>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
+
+                    <MudItem xs="12" md="4">
+                        <div style="text-align: center;">
+                            @if (cityImage != null)
+                            {
+                                <img src="@cityImage.ImageUrl" alt="@cityImage.AltDescription" class="city-image" />
+                            }
+                            else if (showEmptyMessage)
+                            {
+                                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 2rem; height: 250px; display: flex; align-items: center; justify-content: center;">
+                                    <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.6);">
+                                        No image available for @city
+                                    </MudText>
+                                </div>
+                            }
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        }
+
+        <!-- 5-Day Forecast Section -->
+        @if (forecasts?.Any() ?? false)
+        {
+            <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
+                <MudText Typo="Typo.h5" Align="Align.Center" Class="title-text mb-6">
+                    5-Day Forecast
+                </MudText>
+
+                <MudGrid Spacing="3" Justify="Justify.Center">
+                    @{
+                        var startDate = DateTime.Today.AddDays(1);
+                        var forecastDays = forecasts
                         .GroupBy(f => f.Date.Date)
                         .Select(g => g.OrderBy(f => f.Date).First())
                         .Where(f => f.Date.Date >= startDate && f.Date.Date <= startDate.AddDays(4))
-                        .Take(5);
-                }
+                        .OrderBy(f => f.Date)
+                        .ToList();
 
-                @foreach (var forecast in forecastDays)
-                {
-                    <MudItem xs="12" sm="6" md="2">
-                        <div class="forecast-card">
-                            <MudText Typo="Typo.subtitle1"
-                                     Style="color: white; font-weight: 600; margin-bottom: 1rem;">
-                                @forecast.Date.ToString("ddd, MMM dd")
-                            </MudText>
+                        // Ensure 5 cards by adding placeholders if needed
+                        while (forecastDays.Count < 5)
+                        {
+                            forecastDays.Add(new WeatherForecast
+                        {
+                            Date = startDate.AddDays(forecastDays.Count),
+                            Temperature = currentWeather?.Temperature ?? 20,
+                            Summary = "No data",
+                            Icon = "01d",
+                            Name = currentWeather?.Name ?? "Unknown"
+                        });
+                        }
+                    }
 
-                            <MudImage Src="@($"https://openweathermap.org/img/wn/{forecast.Icon}@2x.png")"
-                                      Alt="@forecast.Summary"
-                                      Height="60"
-                                      Class="weather-icon"
-                                      Style="margin: 1rem 0;" />
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        var forecast = forecastDays[i];
+                        <MudItem xs="12" sm="6" md="2">
+                            <div class="forecast-card">
+                                <MudText Typo="Typo.subtitle1" Style="color: white; font-weight: 600; margin-bottom: 1rem;">
+                                    @forecast.Date.ToString("ddd, MMM dd")
+                                </MudText>
 
-                            <MudText Typo="Typo.h5"
-                                     Style="color: white; font-weight: 700; margin: 1rem 0;">
-                                @forecast.Temperature°C
-                            </MudText>
+                                <MudImage Src="@($"https://openweathermap.org/img/wn/{forecast.Icon}@2x.png")"
+                                          Alt="@forecast.Summary"
+                                          Height="60"
+                                          Class="weather-icon"
+                                          Style="margin: 1rem 0;" />
 
-                            <MudText Typo="Typo.body2"
-                                     Style="color: rgba(255, 255, 255, 0.8); text-transform: capitalize;">
-                                @forecast.Summary
-                            </MudText>
-                        </div>
-                    </MudItem>
-                }
-            </MudGrid>
-        </div>
-    }
-    else if (showEmptyMessage)
-    {
-        <div class="glass-container" style="padding: 3rem; text-align: center;">
-            <MudIcon Icon="@Icons.Material.Filled.CloudOff"
-                     Style="font-size: 4rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 1rem;" />
-            <MudText Typo="Typo.h5"
-                     Style="color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem;">
-                No forecast found
-            </MudText>
-            <MudText Typo="Typo.body1"
-                     Style="color: rgba(255, 255, 255, 0.6);">
-                Please try searching for another city
-            </MudText>
-        </div>
-    }
-</MudContainer>
+                                <MudText Typo="Typo.h5"
+                                         Style="color: white; font-weight: 700; margin: 1rem 0;">
+                                    @GetTemperatureDisplay(forecast.Temperature)@unitSymbol
+                                </MudText>
+
+                                <MudText Typo="Typo.body2"
+                                         Style="color: rgba(255, 255, 255, 0.8); text-transform: capitalize;">
+                                    @forecast.Summary
+                                </MudText>
+                            </div>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </div>
+        }
+        else if (showEmptyMessage)
+        {
+            <div class="glass-container" style="padding: 3rem; text-align: center; margin-bottom: 2rem;">
+                <MudIcon Icon="@Icons.Material.Filled.CloudOff"
+                         Style="font-size: 4rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 1rem;" />
+                <MudText Typo="Typo.h5"
+                         Style="color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem;">
+                    No forecast found
+                </MudText>
+                <MudText Typo="Typo.body1"
+                         Style="color: rgba(255, 255, 255, 0.6);">
+                    Please try searching for another city
+                </MudText>
+            </div>
+        }
+    </MudContainer>
+}
 
 @code {
     private class CityImageResponse
@@ -596,16 +641,30 @@
     private WeatherForecast? currentWeather;
     private bool showEmptyMessage = false;
     private List<string> favorites = new();
-    private bool showFavorites = false;
+    private bool showNavMenu = false;
+    private bool showFavoritesSection = false;
     private CityImageResponse? cityImage;
+    private bool isCelsius = true;
+    private string unitSymbol => isCelsius ? "°C" : "°F";
+    private string unitDisplay => isCelsius ? "°C" : "°F";
+    private bool isAuthorized = false;
 
     protected override async Task OnInitializedAsync()
     {
+        var token = await LocalStorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+            return;
+        }
+
+        isAuthorized = true;
+
         var authState = await AuthProvider.GetAuthenticationStateAsync();
         email = authState.User.Identity?.Name;
         if (email == null)
         {
-            email = await Session.GetItemAsync<string>("email");
+            email = await LocalStorage.GetItemAsync<string>("email");
         }
 
         if (email != null)
@@ -618,7 +677,7 @@
     {
         await AuthService.Logout();
         ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
-        Navigation.NavigateTo("/login", true);
+        Navigation.NavigateTo("/register", true);
     }
 
     private async Task GetForecast()
@@ -628,12 +687,11 @@
             var normalizedCity = char.ToUpperInvariant(city.Trim()[0]) + city.Trim().Substring(1).ToLowerInvariant();
             forecasts = await WeatherService.GetForecast(normalizedCity);
 
-            if (forecasts?.Count > 0)
+            if (forecasts?.Any() ?? false)
             {
-                currentWeather = forecasts.FirstOrDefault(f => f.Date.Date == DateTime.Today) ?? forecasts.First();
+                currentWeather = forecasts.FirstOrDefault(f => f.Date.Date == DateTime.Today) ?? forecasts.OrderBy(f => f.Date).First();
                 showEmptyMessage = false;
 
-                // Fetch city image
                 var httpClient = ClientFactory.CreateClient("API");
                 var imageResponse = await httpClient.GetAsync($"api/weather/city-image/{Uri.EscapeDataString(normalizedCity)}");
 
@@ -651,13 +709,13 @@
                     cityImage = null;
                     Snackbar.Add("Failed to fetch image", Severity.Error);
                 }
-
             }
             else
             {
                 currentWeather = null;
                 cityImage = null;
                 showEmptyMessage = true;
+                forecasts = new List<WeatherForecast>();
             }
         }
     }
@@ -707,7 +765,8 @@
             {
                 await WeatherService.RemoveCityFromFavorites(favCity);
                 favorites.RemoveAll(f => f.Equals(favCity, StringComparison.OrdinalIgnoreCase));
-                Snackbar.Add($"Removed {favCity} from favorites", Severity.Info);
+                Snackbar.Add($"Removed {favCity} from favorites!", Severity.Success);
+                await InvokeAsync(StateHasChanged);
             }
             catch
             {
@@ -716,18 +775,40 @@
         }
     }
 
+    private void ToggleNavMenu()
+    {
+        showNavMenu = !showNavMenu;
+    }
+
+    private void ToggleFavoritesSection()
+    {
+        showFavoritesSection = !showFavoritesSection;
+    }
+
     private async Task SelectFavorite(string favCity)
     {
         city = favCity;
         await GetForecast();
-        Snackbar.Add($"Loading weather for {favCity}...", Severity.Info);
+        showNavMenu = false;
+        showFavoritesSection = false;
     }
 
-    private void ToggleFavorites()
+    private void ToggleUnit()
     {
-        showFavorites = !showFavorites;
+        isCelsius = !isCelsius;
+        StateHasChanged();
     }
 
-    [Inject]
-    public ISnackbar Snackbar { get; set; }
+    private string GetTemperatureDisplay(double celsius)
+    {
+        if (isCelsius)
+        {
+            return celsius.ToString("F1");
+        }
+        else
+        {
+            double fahrenheit = (celsius * 9 / 5) + 32;
+            return fahrenheit.ToString("F1");
+        }
+    }
 }

@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "vaw6J2tw72s=",
+  "dgSpecHash": "ZIc7mn6Pi+k=",
   "success": true,
   "projectFilePath": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\WeatherAppFrontend.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\salma\\.nuget\\packages\\blazored.localstorage\\4.5.0\\blazored.localstorage.4.5.0.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\blazored.sessionstorage\\2.4.0\\blazored.sessionstorage.2.4.0.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.16\\microsoft.aspnetcore.authorization.8.0.16.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.16\\microsoft.aspnetcore.components.8.0.16.nupkg.sha512",

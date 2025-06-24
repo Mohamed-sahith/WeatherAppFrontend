@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "WeatherAppFrontend",
   "resources": {
-    "hash": "sha256-A2VXO28XRN+iChxQ3H0j37eegbCCzBchzgvqrSX8Ubk=",
+    "hash": "sha256-Ep3RwAzPP8FIt7iB0ugVzGX3AcWU6ru6H2EaW3KHxmU=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-RiGT44TFZmHOY+Oqvb8o8r+BJVWex6+dPxFxrOiWvFY="
     },
@@ -18,6 +18,7 @@
     },
     "coreAssembly": {},
     "assembly": {
+      "Blazored.LocalStorage.wasm": "sha256-OaMAAd5n7ORfyur5e3QIyEVKJ76MKIvwbg7/icnnYcU=",
       "Blazored.SessionStorage.wasm": "sha256-nQXuCGHos7iwp2WxRUgarKmWgJYChaVQp2NajgNU3V8=",
       "Microsoft.AspNetCore.Authorization.wasm": "sha256-zTuWa2CVqwM2Q09thU8aUhwBsDc4aYCBgaEea1uGnYY=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-65555URXBfFhz4LvzNbH8TJipGjccZ2/uV2kRfw7KSA=",
@@ -218,10 +219,10 @@
       "mscorlib.wasm": "sha256-Im6xq+lOse4P/VnAyrA3hwPstV67V5dB0EwQWcjipyE=",
       "netstandard.wasm": "sha256-PK0GLtj6kQVtZPzq0FZlnSdHh7geujg80LqKdJXA4pI=",
       "System.Private.CoreLib.wasm": "sha256-gEwccs7GbRSPGmeWBOKxNroYfyM+mZ7hqbP3ki1iwX0=",
-      "WeatherAppFrontend.wasm": "sha256-4qwgwds+pwVawWH9YCn3byVxYJqGx98KsP42MyqvoFM="
+      "WeatherAppFrontend.wasm": "sha256-BOwKTZYkW5Z0DAX/+cBG99JQyYG+/fKkwt5rnfspTJM="
     },
     "pdb": {
-      "WeatherAppFrontend.pdb": "sha256-XYLv/yZgGeyCuFqnP7Kp0Ohak2+lE/1N0NwW/fCbyDc="
+      "WeatherAppFrontend.pdb": "sha256-ASQ7zjjzy43aF6t3nwjXep7dAXwl/+OUEa69hwp3T7g="
     }
   },
   "cacheBootResources": true,

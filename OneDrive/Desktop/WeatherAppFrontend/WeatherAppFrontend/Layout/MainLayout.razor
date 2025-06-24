@@ -1,9 +1,9 @@
 ﻿@inherits LayoutComponentBase
-@using Blazored.SessionStorage
+@using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Authorization
 @using WeatherAppFrontend.Services
 @using WeatherAppFrontend.Auth
-@inject ISessionStorageService Session
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject AuthService AuthService
 @inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager Navigation
@@ -14,7 +14,6 @@
 <MudSnackbarProvider />
 
 <div>
-
     <main>
         <MudAppBar Elevation="2" Class="mud-appbar-fixed">
             <MudText Typo="Typo.h6" Class="ml-4">⛅WeatherApp</MudText>
@@ -41,13 +40,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        userEmail = await Session.GetItemAsync<string>("email");
+        await LoadUserEmail();
+        AuthProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+
+    private async void OnAuthenticationStateChanged(Task authenticationStateTask)
+    {
+        await LoadUserEmail();
+    }
+
+    private async Task LoadUserEmail()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        userEmail = authState.User.Identity?.Name;
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            userEmail = await LocalStorage.GetItemAsync<string>("email");
+        }
+        StateHasChanged();
     }
 
     private async Task Logout()
     {
         await AuthService.Logout();
         ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
-        Navigation.NavigateTo("/login", true);
+        Navigation.NavigateTo("/", true);
     }
 }

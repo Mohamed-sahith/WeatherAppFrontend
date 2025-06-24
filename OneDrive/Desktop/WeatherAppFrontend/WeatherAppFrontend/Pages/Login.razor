@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @using WeatherAppFrontend.Services
 @using WeatherAppFrontend.Auth
 @using WeatherAppFrontend.Models.DTOs
@@ -22,6 +22,7 @@
 
     body, html {
         overflow-x: hidden;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     .weather-bg {
@@ -30,111 +31,8 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 20%, #16213e 40%, #0f3460 60%, #533483 80%, #16213e 100%);
-        background-size: 400% 400%;
-        animation: weatherGradient 20s ease infinite;
+        background: linear-gradient(135deg, #1a237e 0%, #45277f 100%);
         overflow: hidden;
-    }
-
-    @@keyframes weatherGradient {
-        0% {
-            background-position: 0% 50%;
-        }
-
-        50% {
-            background-position: 100% 50%;
-        }
-
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-
-    .weather-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 30% 20%, rgba(79, 172, 254, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(142, 68, 173, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 40%, rgba(29, 78, 216, 0.05) 0%, transparent 50%);
-        animation: overlayPulse 15s ease-in-out infinite;
-    }
-
-    @@keyframes overlayPulse {
-        0%, 100% {
-            opacity: 0.3;
-        }
-
-        50% {
-            opacity: 0.7;
-        }
-    }
-
-    .storm-particles {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        pointer-events: none;
-    }
-
-    .lightning {
-        position: absolute;
-        width: 2px;
-        height: 150px;
-        background: linear-gradient(to bottom, rgba(147, 197, 253, 0.8) 0%, rgba(96, 165, 250, 0.6) 50%, transparent 100%);
-        animation: lightning 8s linear infinite;
-        opacity: 0;
-    }
-
-    @@keyframes lightning {
-        0% {
-            opacity: 0;
-            transform: translateY(-100px) rotate(0deg);
-        }
-
-        5% {
-            opacity: 1;
-            transform: translateY(0px) rotate(5deg);
-        }
-
-        10% {
-            opacity: 0;
-            transform: translateY(100px) rotate(10deg);
-        }
-
-        100% {
-            opacity: 0;
-            transform: translateY(100vh) rotate(45deg);
-        }
-    }
-
-    .snow-particle {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        animation: snowfall linear infinite;
-        pointer-events: none;
-    }
-
-    @@keyframes snowfall {
-        0% {
-            transform: translateY(-100px) translateX(0px) rotate(0deg);
-            opacity: 0;
-        }
-
-        10% {
-            opacity: 1;
-        }
-
-        90% {
-            opacity: 1;
-        }
-
-        100% {
-            transform: translateY(100vh) translateX(100px) rotate(360deg);
-            opacity: 0;
-        }
     }
 
     .glass-container {
@@ -148,169 +46,89 @@
     }
 
     .glass-card {
-        background: rgba(15, 23, 42, 0.25);
-        backdrop-filter: blur(25px);
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        border-radius: 32px;
-        padding: 3rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 2.5rem;
         width: 100%;
-        max-width: 420px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        max-width: 400px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
     }
-
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.1), rgba(96, 165, 250, 0.15), rgba(147, 197, 253, 0.1), transparent);
-            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
 
         .glass-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(148, 163, 184, 0.3);
-            background: rgba(15, 23, 42, 0.35);
-            box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
-
-            .glass-card:hover::before {
-                left: 100%;
-            }
 
     .weather-icon {
-        font-size: 4rem !important;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
-        animation: iconFloat 3s ease-in-out infinite;
-    }
-
-    @@keyframes iconFloat {
-        0%, 100% {
-            transform: translateY(0px) rotate(0deg);
-        }
-
-        50% {
-            transform: translateY(-10px) rotate(5deg);
-        }
+        font-size: 3rem !important;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1rem;
     }
 
     .title-gradient {
-        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 25%, #94a3b8 50%, #64748b 75%, #475569 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-weight: 800 !important;
-        text-shadow: 0 0 30px rgba(148, 163, 184, 0.5);
-        animation: titlePulse 4s ease-in-out infinite;
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 600 !important;
+        margin-bottom: 0.5rem;
     }
 
-    @@keyframes titlePulse {
-        0%, 100% {
-            filter: brightness(1);
-            transform: scale(1);
-        }
-
-        50% {
-            filter: brightness(1.2);
-            transform: scale(1.02);
-        }
+    .subtitle-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
     }
 
     .glass-input {
-        background: rgba(30, 41, 59, 0.4) !important;
-        backdrop-filter: blur(15px) !important;
-        border: 1px solid rgba(148, 163, 184, 0.2) !important;
-        border-radius: 20px !important;
-        color: #e2e8f0 !important;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        position: relative;
-        overflow: hidden;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        transition: all 0.3s ease !important;
     }
 
-        .glass-input::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            border-radius: 20px;
-        }
-
         .glass-input:hover {
-            background: rgba(30, 41, 59, 0.6) !important;
-            border-color: rgba(148, 163, 184, 0.4) !important;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
         }
-
-            .glass-input:hover::before {
-                opacity: 1;
-            }
 
         .glass-input:focus-within {
-            background: rgba(30, 41, 59, 0.7) !important;
-            border-color: rgba(59, 130, 246, 0.6) !important;
-            transform: translateY(-3px);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            background: rgba(255, 255, 255, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .glass-input input::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+            transition: opacity 0.3s ease;
+        }
+
+        .glass-input input:focus::placeholder {
+            opacity: 0;
         }
 
     .weather-button {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%) !important;
-        backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(59, 130, 246, 0.4) !important;
-        border-radius: 20px !important;
-        color: #e2e8f0 !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1.5px !important;
-        height: 60px !important;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        position: relative;
-        overflow: hidden;
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-weight: 600 !important;
+        height: 50px !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
     }
 
-        .weather-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         .weather-button:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.5) 0%, rgba(139, 92, 246, 0.5) 100%) !important;
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3) !important;
-            border-color: rgba(59, 130, 246, 0.6) !important;
-        }
-
-            .weather-button:hover::before {
-                left: 100%;
-            }
-
-        .weather-button:active {
-            transform: translateY(-2px) scale(1.01);
+            background: rgba(255, 255, 255, 0.3) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            transform: translateY(-2px);
         }
 
         .weather-button:disabled {
-            opacity: 0.4;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
         }
@@ -321,8 +139,8 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(10px);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -337,169 +155,74 @@
             visibility: visible;
         }
 
-    .weather-loader {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-    }
-
-    .sun-loader {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706);
+    .simple-loader {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid rgba(255, 255, 255, 0.9);
         border-radius: 50%;
-        position: relative;
-        animation: sunRotate 2s linear infinite;
-        box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
+        animation: spin 1s linear infinite;
     }
 
-        .sun-loader::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 15px;
-            background: linear-gradient(to bottom, #fbbf24, transparent);
-            border-radius: 2px;
-            box-shadow: 0 25px 0 0 #fbbf24, 17px 17px 0 0 #fbbf24, 25px 0 0 0 #fbbf24, 17px -17px 0 0 #fbbf24, 0 -25px 0 0 #fbbf24, -17px -17px 0 0 #fbbf24, -25px 0 0 0 #fbbf24, -17px 17px 0 0 #fbbf24;
-            animation: raysPulse 2s ease-in-out infinite;
-        }
+    @@keyframes spin {
+        0%
 
-    @@keyframes sunRotate {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
+    {
+        transform: rotate(0deg);
     }
 
-    @@keyframes raysPulse {
-        0%, 100% {
-            opacity: 1;
-            transform: translateX(-50%) scale(1);
-        }
+    100% {
+        transform: rotate(360deg);
+    }
 
-        50% {
-            opacity: 0.7;
-            transform: translateX(-50%) scale(1.1);
-        }
     }
 
     .loading-text {
-        color: #e2e8f0;
-        font-size: 1.2rem;
-        font-weight: 600;
-        animation: textPulse 1.5s ease-in-out infinite;
-    }
-
-    @@keyframes textPulse {
-        0%, 100% {
-            opacity: 0.7;
-        }
-
-        50% {
-            opacity: 1;
-        }
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        font-weight: 500;
+        margin-top: 1rem;
     }
 
     .signin-link {
-        color: #3b82f6 !important;
+        color: rgba(255, 255, 255, 0.9) !important;
         text-decoration: none !important;
         font-weight: 600 !important;
         transition: all 0.3s ease;
-        position: relative;
+        border-bottom: 1px solid transparent;
     }
-
-        .signin-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            left: 0;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            transition: width 0.3s ease;
-        }
 
         .signin-link:hover {
-            color: #60a5fa !important;
-            text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-            transform: translateY(-1px);
+            color: rgba(255, 255, 255, 1) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.7);
         }
-
-            .signin-link:hover::after {
-                width: 100%;
-            }
-
-    .mud-input {
-        color: #e2e8f0 !important;
-    }
-
-    .mud-input-label {
-        color: rgba(226, 232, 240, 0.8) !important;
-        font-weight: 500 !important;
-    }
-
-    .mud-input-underline:before {
-        border-bottom-color: rgba(148, 163, 184, 0.3) !important;
-    }
-
-    .mud-input-underline:hover:before {
-        border-bottom-color: rgba(148, 163, 184, 0.6) !important;
-    }
-
-    .mud-input-underline:after {
-        border-bottom-color: rgba(59, 130, 246, 0.8) !important;
-    }
-
-    .subtitle-text {
-        color: rgba(226, 232, 240, 0.8);
-        font-size: 1.1rem;
-        line-height: 1.6;
-        margin-bottom: 0.5rem;
-    }
 
     .divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.3), transparent);
+        background: rgba(255, 255, 255, 0.2);
         margin: 2rem 0;
+    }
+
+    .mud-input {
+        color: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    .mud-input-adornment {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .mud-progress-circular {
+        color: rgba(255, 255, 255, 0.9) !important;
     }
 </style>
 
 <!-- Weather Background -->
-<div class="weather-bg">
-    <div class="weather-overlay"></div>
-
-    <!-- Storm Particles -->
-    <div class="storm-particles">
-        @for (int i = 0; i < 8; i++)
-        {
-            <div class="lightning" style="left: @(Random.Shared.Next(0, 100))%; animation-delay: @(Random.Shared.Next(0, 8))s;"></div>
-        }
-
-        @for (int i = 0; i < 20; i++)
-        {
-            var size = Random.Shared.Next(2, 6);
-            <div class="snow-particle"
-                 style="width: @(size)px; height: @(size)px;
-                        left: @(Random.Shared.Next(0, 100))%;
-                        animation-duration: @(Random.Shared.Next(8, 15))s;
-                        animation-delay: @(Random.Shared.Next(0, 10))s;"></div>
-        }
-    </div>
-</div>
+<div class="weather-bg"></div>
 
 <!-- Loading Overlay -->
 <div class="loading-overlay @(isLoading ? "show" : "")" id="loadingOverlay">
-    <div class="weather-loader">
-        <div class="sun-loader"></div>
-
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div class="simple-loader"></div>
         <div class="loading-text">Signing you in...</div>
     </div>
 </div>
@@ -508,9 +231,9 @@
 <div class="glass-container">
     <div class="glass-card">
         <!-- Header -->
-        <div style="text-align: center; margin-bottom: 2.5rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
             <MudIcon Icon="@Icons.Material.Filled.Lock" Class="weather-icon" />
-            <MudText Typo="Typo.h3" Class="title-gradient" Style="margin: 1rem 0 0.5rem 0;">
+            <MudText Typo="Typo.h4" Class="title-gradient">
                 Welcome Back
             </MudText>
             <MudText Class="subtitle-text">
@@ -524,7 +247,7 @@
 
             <div style="margin-bottom: 1.5rem;">
                 <MudTextField @bind-Value="loginModel.Email"
-                              Label="Email Address"
+                              Placeholder="Email Address"
                               Variant="Variant.Outlined"
                               Class="glass-input"
                               Style="width: 100%;"
@@ -535,7 +258,7 @@
 
             <div style="margin-bottom: 2rem;">
                 <MudTextField @bind-Value="loginModel.Password"
-                              Label="Password"
+                              Placeholder="Password"
                               Variant="Variant.Outlined"
                               Class="glass-input"
                               Style="width: 100%;"
@@ -547,16 +270,15 @@
             <MudButton Variant="Variant.Filled"
                        ButtonType="ButtonType.Submit"
                        Disabled="@(!IsFormValid || isLoading)"
-                       Class="weather-button"
-                       Style="width: 100%;">
+                       Class="weather-button">
                 @if (isLoading)
                 {
-                    <MudProgressCircular Size="Size.Small" Color="Color.Inherit" Class="mr-3" />
+                    <MudProgressCircular Size="Size.Small" Color="Color.Inherit" Class="mr-2" />
                     <span>Signing In...</span>
                 }
                 else
                 {
-                    <MudIcon Icon="@Icons.Material.Filled.Login" Class="mr-3" />
+                    <MudIcon Icon="@Icons.Material.Filled.Login" Class="mr-2" />
                     <span>Sign In</span>
                 }
             </MudButton>
@@ -565,9 +287,9 @@
         <!-- Footer -->
         <div class="divider"></div>
         <div style="text-align: center;">
-            <MudText Typo="Typo.body2" Style="color: rgba(226, 232, 240, 0.8);">
+            <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">
                 Don't have an account?
-                <MudLink Href="/" Class="signin-link" Style="margin-left: 0.5rem;">
+                <MudLink Href="/Register" Class="signin-link" Style="margin-left: 0.5rem;">
                     Create Account
                 </MudLink>
             </MudText>
@@ -586,7 +308,7 @@
         StateHasChanged();
 
         // Simulate loading time for better UX
-        await Task.Delay(20);
+        await Task.Delay(1500);
 
         var success = await AuthService.Login(loginModel);
 
