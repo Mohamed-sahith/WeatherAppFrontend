@@ -31,20 +31,20 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Pages/Register.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Pages/UserInfo.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlckluZm8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Pages/UserProfile.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlclByb2ZpbGUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/salma/OneDrive/Desktop/WeatherAppFrontend/WeatherAppFrontend/Pages/Weather.razor]

@@ -21,10 +21,6 @@
       "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\favicon.png",
-      "PackagePath": "staticwebassets\\favicon.png"
-    },
-    {
       "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\icon-192.png",
       "PackagePath": "staticwebassets\\icon-192.png"
     },
@@ -33,12 +29,12 @@
       "PackagePath": "staticwebassets\\index.html"
     },
     {
-      "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\rainy.ico",
-      "PackagePath": "staticwebassets\\rainy.ico"
-    },
-    {
       "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\sample-data\\weather.json",
       "PackagePath": "staticwebassets\\sample-data\\weather.json"
+    },
+    {
+      "Id": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\wwwroot\\weather-app.ico",
+      "PackagePath": "staticwebassets\\weather-app.ico"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.WeatherAppFrontend.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

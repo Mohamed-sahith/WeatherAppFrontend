@@ -1,0 +1,167 @@
+﻿@page "/userprofile"
+@* @attribute [Authorize] *@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Blazored.LocalStorage
+@using WeatherAppFrontend.Services
+@using Microsoft.JSInterop  
+@using WeatherAppFrontend.Layout
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@inject WeatherService WeatherService
+@inject MudBlazor.ISnackbar Snackbar
+@using MudBlazor
+@* @rendermode InteractiveWebAssembly *@
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<style>
+    .weather-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1e2a78 0%, #3e2b5f 25%, #1e2a78 50%, #3e2b5f 75%, #1e2a78 100%);
+        background-size: 400% 400%;
+        animation: gradientBG 20s ease infinite;
+        z-index: -1;
+    }
+
+    .glass-container {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(25px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 600px;
+        color: white;
+    }
+
+    .favorite-item {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 0.5rem 1rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .favorite-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+    @@keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+</style>
+
+<div class="weather-bg"></div>
+
+<MudContainer Style="padding-top: 64px; position: relative; z-index: 10;">
+    <div class="glass-container">
+        <MudText Typo="Typo.h5">User Profile</MudText>
+        <MudText Typo="Typo.body1">Email: @email</MudText>
+        <MudText Typo="Typo.h6" Style="margin-top: 1rem;">Favorite Cities</MudText>
+        @if (favorites?.Any() ?? false)
+        {
+            @foreach (var city in favorites)
+            {
+                <div class="favorite-item">
+                    <MudText Typo="Typo.body2" Class="me-2">City: @city</MudText>
+
+                    <div class="d-flex align-center gap-2">
+                        <MudButton OnClick="() => NavigateToWeather(city)"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Success"
+                                   Size="Size.Small">
+                            Go
+                        </MudButton>
+
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Error"
+                                       Size="Size.Small"
+                                       OnClick="() => RemoveFavorite(city)" />
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.6);">No favorite cities added yet.</MudText>
+        }
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-top: 1rem;" OnClick="GoBack">
+            Back to Weather
+        </MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    private string? email;
+    private List<string>? favorites;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            email = authState.User?.Identity?.Name ?? await LocalStorage.GetItemAsync<string>("email");
+            if (email == null)
+            {
+                Navigation.NavigateTo("/login", forceLoad: true);
+                return;
+            }
+            favorites = await WeatherService.GetUserFavorites(email) ?? new List<string>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnInitializedAsync error: {ex.Message}");
+            Snackbar.Add("An error occurred while loading profile.", Severity.Error);
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    private async Task RemoveFavorite(string city)
+    {
+        try
+        {
+            if (email != null && !string.IsNullOrEmpty(city))
+            {
+                await WeatherService.RemoveCityFromFavorites(city);
+                favorites?.Remove(city);
+                Snackbar.Add($"Removed {city} from favorites!", Severity.Success);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"RemoveFavorite error: {ex.Message}");
+            Snackbar.Add("Failed to remove city from favorites.", Severity.Error);
+        }
+    }
+
+    private void NavigateToWeather(string city)
+    {
+        Navigation.NavigateTo($"/weather?city={Uri.EscapeDataString(city)}");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/weather");
+    }
+}

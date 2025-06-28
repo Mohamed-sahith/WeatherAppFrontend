@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@namespace WeatherAppFrontend.Layout
+@inherits LayoutComponentBase
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Authorization
 @using WeatherAppFrontend.Services
@@ -7,11 +8,13 @@
 @inject AuthService AuthService
 @inject AuthenticationStateProvider AuthProvider
 @inject NavigationManager Navigation
+@inject MudBlazor.ISnackbar Snackbar
 @using MudBlazor
 
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />
 
 <div>
     <main>
@@ -20,8 +23,29 @@
             @if (!string.IsNullOrEmpty(userEmail) && !IsLoginOrRegisterPage)
             {
                 <MudSpacer />
-                <MudText Typo="Typo.body2">@userEmail</MudText>
-                <MudButton Variant="Variant.Outlined" Color="Color.Error" Class="ms-2" OnClick="Logout">Logout</MudButton>
+
+                <MudMenu Direction="Direction.BottomStart"
+                         AnchorOrigin="Origin.TopRight"
+                         TransformOrigin="Origin.TopRight"
+                         Class="user-info-glass custom-user-menu">
+
+                    <ActivatorContent>
+                        <MudIcon Icon="@Icons.Material.Filled.AccountCircle" Style="color: white; font-size: 2rem;" />
+                        <MudText Typo="Typo.body2" Style="color: white; margin-left: 8px;">@userEmail</MudText>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <!-- Temporarily hidden old User Info option -->
+                        <!-- <MudMenuItem OnClick="NavigateToUserInfo" Style="display: none;">
+                            <MudText Typo="Typo.body1" Style="color: white;">User Info</MudText>
+                        </MudMenuItem> -->
+                        <MudMenuItem OnClick="NavigateToUserProfile">
+                            <MudText Typo="Typo.body1" Style="color: white;">User Profile</MudText>
+                        </MudMenuItem>
+                        <MudMenuItem OnClick="Logout">
+                            <MudText Typo="Typo.body1" Style="color: white;">Logout</MudText>
+                        </MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
             }
         </MudAppBar>
 
@@ -40,19 +64,44 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (AuthService == null || AuthProvider == null)
+        {
+            Console.WriteLine("AuthService or AuthProvider is null during initialization.");
+            return;
+        }
         await LoadUserEmail();
         AuthProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
     }
 
-    private async void OnAuthenticationStateChanged(Task authenticationStateTask)
+    private void OnAuthenticationStateChanged(Task<AuthenticationState> authenticationStateTask)
     {
-        await LoadUserEmail();
+        _ = LoadUserEmailAsync(authenticationStateTask);
+    }
+
+    private async Task LoadUserEmailAsync(Task<AuthenticationState> authenticationStateTask)
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            await LoadUserEmail();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnAuthenticationStateChanged: {ex.Message}");
+            Snackbar.Add("An error occurred while updating authentication state.", Severity.Error);
+        }
     }
 
     private async Task LoadUserEmail()
     {
+        if (AuthProvider == null)
+        {
+            Console.WriteLine("AuthProvider is null in LoadUserEmail.");
+            return;
+        }
         var authState = await AuthProvider.GetAuthenticationStateAsync();
-        userEmail = authState.User.Identity?.Name;
+        userEmail = authState.User?.Identity?.Name;
         if (string.IsNullOrEmpty(userEmail))
         {
             userEmail = await LocalStorage.GetItemAsync<string>("email");
@@ -60,10 +109,87 @@
         StateHasChanged();
     }
 
+    private void NavigateToUserProfile()
+    {
+        Navigation.NavigateTo("/userprofile");
+    }
+
     private async Task Logout()
     {
+        if (AuthService == null)
+        {
+            Console.WriteLine("AuthService is null during logout.");
+            return;
+        }
         await AuthService.Logout();
-        ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
-        Navigation.NavigateTo("/", true);
+        if (AuthProvider is CustomAuthProvider customAuthProvider)
+        {
+            customAuthProvider.NotifyAuthChanged();
+        }
+        Navigation.NavigateTo("/login", forceLoad: true);
+        Snackbar.Add("Logged out successfully.", Severity.Info);
+    }
+
+    private void NavigateToUserInfo()
+    {
+        Navigation.NavigateTo("/userinfo");
+    }
+
+    public void Dispose()
+    {
+        if (AuthProvider != null)
+        {
+            AuthProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+        }
     }
 }
+
+<style>
+    .user-info-glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .user-info-glass:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+    .custom-user-menu {
+        margin-top: 8px;
+    }
+
+    .mud-popover {
+        background: rgba(0, 0, 0, 0.7) !important;
+        backdrop-filter: blur(15px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .mud-menu-item {
+        padding: 12px 20px;
+        transition: background 0.3s ease;
+    }
+
+        .mud-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+    .main-layout {
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .content {
+        padding-top: 64px;
+        height: calc(100vh - 64px);
+        overflow-y: auto;
+    }
+</style>

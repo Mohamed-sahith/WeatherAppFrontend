@@ -11,14 +11,18 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Register the AuthHeaderHandler first
+// Register the AuthHeaderHandler with dependencies
 builder.Services.AddScoped<AuthHeaderHandler>();
+builder.Services.AddScoped(sp => new AuthHeaderHandler(
+    sp.GetRequiredService<ILocalStorageService>(),
+    sp.GetRequiredService<AuthenticationStateProvider>()
+));
 
-// Named HttpClient for API communication (your backend)
+// Named HttpClient for API communication
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7257/"); // Ensure this matches your backend URL
-    client.DefaultRequestHeaders.Add("Accept", "application/json"); // Optional: Ensure JSON responses
+    client.BaseAddress = new Uri("https://localhost:7257/"); // Ensure this matches your API URL
+    client.DefaultRequestHeaders.Add("Accept", "application/json"); // Keep Accept header
 })
 .AddHttpMessageHandler<AuthHeaderHandler>();
 
@@ -33,7 +37,17 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<WeatherService>();
 
-// Add MudBlazor services to register ISnackbar and other MudBlazor dependencies
+// Add MudBlazor services
 builder.Services.AddMudServices();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+try
+{
+    Console.WriteLine("Starting WebAssembly host...");
+    await host.RunAsync();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Application startup error: {ex.Message}\nStackTrace: {ex.StackTrace}");
+}

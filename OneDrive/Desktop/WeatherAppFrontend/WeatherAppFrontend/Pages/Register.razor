@@ -1,9 +1,9 @@
-﻿@page "/register"
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Forms
 @using WeatherAppFrontend.Services
 @using WeatherAppFrontend.Models.DTOs
 @inject AuthService AuthService
 @inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime
 @using MudBlazor
 
 <MudThemeProvider />
@@ -241,7 +241,7 @@
         <!-- Registration Form -->
         <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
             <DataAnnotationsValidator />
-
+            <ValidationSummary />
             <div style="margin-bottom: 1.5rem;">
                 <MudTextField @bind-Value="registerModel.Email"
                               Placeholder="Email Address"
@@ -286,7 +286,7 @@
         <div style="text-align: center;">
             <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">
                 Already have an account?
-                <MudLink Href="/" Class="signin-link" Style="margin-left: 0.5rem;">
+                <MudLink Href="/login" Class="signin-link" Style="margin-left: 0.5rem;">
                     Sign In Here
                 </MudLink>
             </MudText>
@@ -301,25 +301,35 @@
 
     private async Task HandleRegister()
     {
+        Console.WriteLine("HandleRegister called with Email: " + registerModel.Email);
         isLoading = true;
         StateHasChanged();
 
-        // Simulate loading time for better UX
-        await Task.Delay(1500);
+        await Task.Delay(1500); // Simulate loading
 
-        var success = await AuthService.Register(registerModel);
-
-        isLoading = false;
-        StateHasChanged();
-
-        if (success)
+        try
         {
-            Snackbar.Add("Registration successful! Welcome to WeatherApp!", Severity.Success);
-            Navigation.NavigateTo("/");
+            var success = await AuthService.Register(registerModel);
+            Console.WriteLine("Register API call completed, success: " + success);
+            isLoading = false;
+            StateHasChanged();
+
+            if (success)
+            {
+                Snackbar.Add("Registration successful! Please log in.", Severity.Success);
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                Snackbar.Add("Registration failed. Please try again.", Severity.Error);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Registration failed. Please try again.", Severity.Error);
+            Console.WriteLine("Error in HandleRegister: " + ex.Message);
+            isLoading = false;
+            StateHasChanged();
+            Snackbar.Add("An error occurred during registration.", Severity.Error);
         }
     }
 

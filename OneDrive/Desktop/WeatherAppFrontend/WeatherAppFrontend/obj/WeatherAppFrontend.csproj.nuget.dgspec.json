@@ -91,6 +91,10 @@
             "MudBlazor": {
               "target": "Package",
               "version": "[7.7.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.12.0, )"
             }
           },
           "imports": [

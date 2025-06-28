@@ -40,6 +40,10 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.Extensions.Options.ConfigurationExtensions.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.Extensions.Options.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.Extensions.Primitives.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.Abstractions.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.JsonWebTokens.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.Logging.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.Tokens.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.JSInterop.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.JSInterop.WebAssembly.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.VisualBasic.Core.wasm
@@ -86,6 +90,7 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Globalization.Calendars.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Globalization.Extensions.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Globalization.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.IdentityModel.Tokens.Jwt.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.IO.Compression.Brotli.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.IO.Compression.FileSystem.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.IO.Compression.wasm
@@ -307,6 +312,7 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Blazored.SessionStorage.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Security.AccessControl.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Runtime.Extensions.wasm.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.Abstractions.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\dotnet.runtime.js.map.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Reflection.Emit.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Security.Principal.Windows.wasm.gz
@@ -314,6 +320,7 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Security.Cryptography.Csp.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.AspNetCore.Components.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.IO.FileSystem.Watcher.wasm.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.Logging.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Runtime.Serialization.Xml.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Threading.Tasks.Extensions.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.ComponentModel.EventBasedAsync.wasm.gz
@@ -334,6 +341,7 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.Extensions.FileSystemGlobbing.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\icudt_CJK.dat.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Xml.XmlDocument.wasm.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.IdentityModel.Tokens.Jwt.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.AspNetCore.Components.Authorization.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Net.Http.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.Win32.Primitives.wasm.gz
@@ -428,6 +436,8 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Security.Cryptography.Algorithms.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Numerics.Vectors.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\System.Threading.Thread.wasm.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.JsonWebTokens.wasm.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\wwwroot\_framework\Microsoft.IdentityModel.Tokens.wasm.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\WeatherAppFrontend.staticwebassets.runtime.json
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\WeatherAppFrontend.staticwebassets.endpoints.json
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\WeatherAppFrontend.dll
@@ -461,9 +471,14 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.Extensions.Options.ConfigurationExtensions.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.JSInterop.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.JSInterop.WebAssembly.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\MudBlazor.dll
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\System.IO.Pipelines.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.CSharp.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\bin\Debug\net8.0\Microsoft.VisualBasic.Core.dll
@@ -679,9 +694,14 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.Extensions.Options.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.Extensions.Options.ConfigurationExtensions.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.Extensions.Primitives.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.IdentityModel.Abstractions.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.IdentityModel.JsonWebTokens.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.IdentityModel.Logging.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.IdentityModel.Tokens.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.JSInterop.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.JSInterop.WebAssembly.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\MudBlazor.wasm
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\System.IdentityModel.Tokens.Jwt.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\System.IO.Pipelines.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.CSharp.wasm
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\webcil\Microsoft.VisualBasic.Core.wasm
@@ -887,9 +907,14 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\og8u6idw5y-jt8xzja2dj.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\kx3erzmad4-zyudcniekx.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\cfnnxwckou-lsakbjp1fg.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\fakcgka831-3lvb13l9fu.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\zius8yhhr5-r1qzgwdqyv.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\g2ivcgp3kh-d3h6l1vzfv.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\zsr9grqsrh-zq4kbb4re5.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\lg0jmw40ix-n4ppp9nmdx.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\l78vfi9xnm-zlwwe9rgum.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\izpxpngm6d-evtxtkx634.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\icehswwk92-p4t7562us4.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\69391qhj61-iudrcw56e1.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\bpojo3w1c6-vz4qn40jhg.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\8kpy1uiw28-jmn0i77l29.gz
@@ -1069,6 +1094,9 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\y38spcgtpk-tptq2av103.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\n66pxaez03-lfu7j35m59.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\lv0yhjv86z-oyz0vx2fzb.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\hsu92r89yh-cdnrcq40o2.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\j5rohlh9sh-08sqh7661z.gz
+C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\97t2ojl4nb-7g3lzvzuo7.gz
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\staticwebassets.build.endpoints.json
@@ -1084,6 +1112,3 @@ C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\refint\WeatherAppFrontend.dll
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\WeatherAppFrontend.pdb
 C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\ref\WeatherAppFrontend.dll
-C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\hsu92r89yh-cewcli8y3i.gz
-C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\j5rohlh9sh-nurgrc8v77.gz
-C:\Users\salma\OneDrive\Desktop\WeatherAppFrontend\WeatherAppFrontend\obj\Debug\net8.0\compressed\97t2ojl4nb-kh28sz23ht.gz

@@ -1,0 +1,196 @@
+﻿@page "/userinfo"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Blazored.LocalStorage
+@using WeatherAppFrontend.Services
+@using WeatherAppFrontend.Auth
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject AuthService AuthService
+@inject WeatherService WeatherService
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using MudBlazor
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<style>
+    .weather-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1e2a78 0%, #3e2b5f 25%, #1e2a78 50%, #3e2b5f 75%, #1e2a78 100%);
+        background-size: 400% 400%;
+        animation: gradientBG 20s ease infinite;
+        z-index: -1;
+    }
+
+    .glass-container {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(25px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .glass-list-item {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        margin: 8px 0;
+        padding: 16px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .glass-list-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+    .logout-button {
+        background: rgba(255, 69, 58, 0.2) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 69, 58, 0.3) !important;
+        border-radius: 25px !important;
+        color: white !important;
+        font-weight: 600 !important;
+    }
+
+        .logout-button:hover {
+            background: rgba(255, 69, 58, 0.3) !important;
+            border-color: rgba(255, 69, 58, 0.5) !important;
+        }
+
+    .title-text {
+        color: white;
+        font-weight: 700;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    @@keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+</style>
+
+<div class="weather-bg"></div>
+
+<MudContainer MaxWidth="MaxWidth.Large" Style="padding-top: 64px; position: relative; z-index: 10;">
+    <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <MudAvatar Style="background: #ff6f61; color: white;" Size="Size.Medium">
+                @(email?[0].ToString().ToUpper())
+            </MudAvatar>
+        </div>
+
+        <MudText Typo="Typo.h5" Class="title-text" Style="margin-bottom: 0.5rem;">
+            @greeting, @email!
+        </MudText>
+
+        <MudText Typo="Typo.h6" Class="title-text" Style="margin-top: 1rem; margin-bottom: 1rem;">
+            Favorite Cities
+        </MudText>
+        @if (favorites?.Any(f => !string.IsNullOrEmpty(f)) ?? false)
+        {
+            @foreach (var fav in favorites.Where(f => !string.IsNullOrEmpty(f)))
+            {
+                <div class="glass-list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <MudText Typo="Typo.body1" Style="color: white; font-weight: 500;">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Style="font-size: 1.2rem;" />
+                        @fav
+                    </MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                   Style="color: rgba(255, 69, 58, 0.8);" 
+                                   Size="Size.Small" 
+                                   OnClick="@(() => RemoveFromFavorites(fav))" />
+                </div>
+            }
+        }
+        else
+        {
+            <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.6);">
+                No favorite cities added yet.
+            </MudText>
+        }
+
+        <MudButton Variant="Variant.Filled" Class="logout-button" OnClick="Logout" Style="margin-top: 2rem;">
+            Logout
+        </MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    private string? email;
+    private List<string> favorites = new();
+    private string greeting = "Welcome";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var token = await LocalStorage.GetItemAsync<string>("authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Navigation.NavigateTo("/", forceLoad: true);
+                return;
+            }
+
+            var authState = await AuthProvider.GetAuthenticationStateAsync();
+            email = authState.User.Identity?.Name ?? await LocalStorage.GetItemAsync<string>("email");
+
+            if (email == null)
+            {
+                Navigation.NavigateTo("/", forceLoad: true);
+                return;
+            }
+
+            var hour = DateTime.Now.Hour;
+            greeting = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+
+            favorites = await WeatherService.GetUserFavorites(email) ?? new List<string>();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnInitializedAsync error: {ex.Message}");
+            Snackbar.Add("An error occurred while loading user info.", Severity.Error);
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
+        Navigation.NavigateTo("/", true);
+    }
+
+    private async Task RemoveFromFavorites(string favCity)
+    {
+        if (email != null && !string.IsNullOrEmpty(favCity))
+        {
+            try
+            {
+                await WeatherService.RemoveCityFromFavorites(favCity);
+                favorites.RemoveAll(f => f.Equals(favCity, StringComparison.OrdinalIgnoreCase));
+                Snackbar.Add($"Removed {favCity} from favorites!", Severity.Success);
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"RemoveFromFavorites error: {ex.Message}");
+                Snackbar.Add("Failed to remove city from favorites", Severity.Error);
+            }
+        }
+    }
+}

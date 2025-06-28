@@ -1,8 +1,10 @@
 ﻿@page "/weather"
 @attribute [Authorize]
 
+@using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Web
 @using Blazored.LocalStorage
 @using WeatherAppFrontend.Services
 @using WeatherAppFrontend.Auth
@@ -14,12 +16,7 @@
 @inject NavigationManager Navigation
 @inject IHttpClientFactory ClientFactory
 @inject ISnackbar Snackbar
-@inject IJSRuntime JSRuntime
 @using MudBlazor
-
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
 
 <style>
     .weather-bg {
@@ -57,6 +54,7 @@
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
+        margin-top: 2rem;
     }
 
         .current-weather-card:hover {
@@ -65,11 +63,11 @@
         }
 
     .forecast-card {
-        background: 1.5rem;
+        background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(20px);
-        border-radius: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 0, 255);
-        box-shadow: 0 4px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         padding: 20px;
         text-align: center;
         transition: all 0.3s ease;
@@ -88,11 +86,14 @@
         border-radius: 12px !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         color: white !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
     }
 
         .glass-input:hover {
             background: rgba(255, 255, 255, 0.15) !important;
-            border-color: rgba(255, 255, 0.3) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
         }
 
         .glass-input input::placeholder {
@@ -107,6 +108,7 @@
         color: white !important;
         font-weight: 600 !important;
         transition: all 0.3s ease !important;
+        position: relative;
     }
 
         .glass-button:hover {
@@ -114,6 +116,39 @@
             border-color: rgba(255, 255, 255, 0.4) !important;
             transform: translateY(-2px);
         }
+
+    .loading-spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .button-loading-spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        margin-left: 10px;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 
     .heart-button {
         background: rgba(255, 20, 147, 0.2) !important;
@@ -147,20 +182,20 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
         position: fixed;
-        top: 64px; /* Adjusted to account for fixed app bar height */
+        top: 64px;
         left: 20px;
         width: 320px;
-        max-height: calc(100vh - 84px); /* Adjusted to account for app bar and padding */
+        max-height: calc(100vh - 84px);
         overflow-y: auto;
         z-index: 1200;
         padding: 2rem;
         transform: translateX(-100%);
         transition: transform 0.3s ease;
-        display: none; /* Hidden by default */
+        display: none;
     }
 
         .glass-nav-menu.show {
-            display: block; /* Show only when class 'show' is added */
+            display: block;
             transform: translateX(0);
         }
 
@@ -174,6 +209,7 @@
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease, padding 0.3s ease;
+        text-align: center;
     }
 
         .glass-favorites-section.show {
@@ -214,6 +250,7 @@
         padding: 16px;
         transition: all 0.3s ease;
         cursor: pointer;
+        position: relative;
     }
 
         .glass-list-item:hover {
@@ -222,30 +259,9 @@
             transform: translateX(5px);
         }
 
-    .user-info-glass {
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(15px);
-        border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 12px 24px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        justify-content: center;
-    }
-
-    .logout-button {
-        background: rgba(255, 69, 58, 0.2) !important;
-        backdrop-filter: blur(15px) !important;
-        border: 1px solid rgba(255, 69, 58, 0.3) !important;
-        border-radius: 25px !important;
-        color: white !important;
-        font-weight: 600 !important;
-    }
-
-        .logout-button:hover {
-            background: rgba(255, 69, 58, 0.3) !important;
-            border-color: rgba(255, 69, 58, 0.5) !important;
+        .glass-list-item.loading {
+            pointer-events: none;
+            opacity: 0.7;
         }
 
     .title-text {
@@ -276,9 +292,9 @@
     .search-container {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 1rem;
         flex-wrap: wrap;
+        padding: 1rem;
     }
 
     .mud-input {
@@ -295,7 +311,7 @@
     }
 
     .city-image {
-        width: 700px;
+        width: 350px;
         height: 350px;
         border-radius: 16px;
         object-fit: cover;
@@ -402,12 +418,16 @@ else
             {
                 @foreach (var fav in favorites)
                 {
-                    <div class="glass-list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="glass-list-item @(favoriteLoading == fav ? "loading" : "")" style="display: flex; justify-content: space-between; align-items: center;">
                         <MudText Typo="Typo.body1" @onclick="@(() => SelectFavorite(fav))" Style="color: white; font-weight: 500; cursor: pointer; flex: 1;">
                             <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Style="font-size: 1.2rem;" />
                             @fav
                         </MudText>
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Style="color: rgba(255, 69, 58, 0.8);" Size="Size.Small" OnClick="@(() => RemoveFromFavorites(fav))" />
+                        @if (favoriteLoading == fav)
+                        {
+                            <div class="loading-spinner"></div>
+                        }
                     </div>
                 }
             }
@@ -428,19 +448,44 @@ else
 
     <MudContainer MaxWidth="MaxWidth.Large" Style="padding-top: 64px; position: relative; z-index: 10; margin-left: 60px;">
         <!-- Search Section with Unit Toggle -->
-        <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
+        <div class="glass-container" style="padding: 2rem; margin-bottom: 0;">
             <div class="search-container">
-                <MudTextField @bind-Value="city" Placeholder="Enter city name" Variant="Variant.Outlined" Class="glass-input" AdornmentIcon="@Icons.Material.Filled.LocationOn" Adornment="Adornment.Start" Style="min-width: 300px;" />
+                <MudTextField @bind-Value="city"
+                              Placeholder="Enter city name"
+                              Variant="Variant.Outlined"
+                              Class="glass-input"
+                              AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                              Adornment="Adornment.Start"
+                              Style="min-width: 300px;"
+                              @onkeydown="@HandleKeyDown" /> <!-- Corrected event binding -->
 
-                <MudButton Variant="Variant.Filled" Class="glass-button" OnClick="GetForecast" Style="min-width: 150px; height: 56px;">
+                <MudButton Variant="Variant.Filled"
+                           Class="glass-button"
+                           OnClick="GetForecast"
+                           Style="min-width: 150px; height: 56px; display: flex; align-items: center; justify-content: center;"
+                           Disabled="@isLoading">
                     <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" /> Get Weather
+                    @if (isLoading)
+                    {
+                        <div class="button-loading-spinner"></div>
+                    }
                 </MudButton>
 
-                <MudButton Variant="Variant.Filled" Class="glass-button" OnClick="ToggleNavMenu" Style="min-width: 150px; height: 56px;">
+                <MudButton Variant="Variant.Filled"
+                           Class="glass-button"
+                           OnClick="ToggleNavMenu"
+                           Style="min-width: 150px; height: 56px; display: flex; align-items: center; justify-content: center;"
+                           Disabled="@isFavoritesLoading">
                     <MudIcon Icon="@Icons.Material.Filled.Favorite" Class="mr-2" /> Favorite Cities
+                    @if (isFavoritesLoading)
+                    {
+                        <div class="button-loading-spinner"></div>
+                    }
                 </MudButton>
 
-                <MudButton Class="unit-toggle-button" OnClick="ToggleUnit" Style="height: 56px;">
+                <MudButton Class="unit-toggle-button"
+                           OnClick="ToggleUnit"
+                           Style="height: 56px;">
                     @unitDisplay
                 </MudButton>
             </div>
@@ -449,7 +494,7 @@ else
         <!-- Current Weather Section with City Image -->
         @if (currentWeather != null)
         {
-            <div class="current-weather-card" style="margin-bottom: 2rem;">
+            <div class="current-weather-card">
                 <!-- Add to Favorites Button positioned at top-left -->
                 <MudButton Class="@(IsCityFavorited() ? "heart-button favorited" : "heart-button")" OnClick="ToggleFavorite" Title="@(IsCityFavorited() ? "Remove from favorites" : "Add to favorites")">
                     <MudIcon Icon="@(IsCityFavorited() ? Icons.Material.Filled.Favorite : Icons.Material.Filled.FavoriteBorder)" />
@@ -549,7 +594,7 @@ else
         <!-- 5-Day Forecast Section -->
         @if (forecasts?.Any() ?? false)
         {
-            <div class="glass-container" style="padding: 2rem; margin-bottom: 2rem;">
+            <div class="glass-container" style="padding: 2rem; margin-top: 2rem;">
                 <MudText Typo="Typo.h5" Align="Align.Center" Class="title-text mb-6">
                     5-Day Forecast
                 </MudText>
@@ -564,7 +609,6 @@ else
                         .OrderBy(f => f.Date)
                         .ToList();
 
-                        // Ensure 5 cards by adding placeholders if needed
                         while (forecastDays.Count < 5)
                         {
                             forecastDays.Add(new WeatherForecast
@@ -573,7 +617,7 @@ else
                             Temperature = currentWeather?.Temperature ?? 20,
                             Summary = "No data",
                             Icon = "01d",
-                            Name = currentWeather?.Name ?? "Unknown"
+                            Name = currentWeather?.Name ?? city
                         });
                         }
                     }
@@ -610,7 +654,7 @@ else
         }
         else if (showEmptyMessage)
         {
-            <div class="glass-container" style="padding: 3rem; text-align: center; margin-bottom: 2rem;">
+            <div class="glass-container" style="padding: 3rem; text-align: center; margin-top: 2rem;">
                 <MudIcon Icon="@Icons.Material.Filled.CloudOff"
                          Style="font-size: 4rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 1rem;" />
                 <MudText Typo="Typo.h5"
@@ -627,14 +671,6 @@ else
 }
 
 @code {
-    private class CityImageResponse
-    {
-        public string ImageUrl { get; set; }
-        public string AltDescription { get; set; }
-        public string Photographer { get; set; }
-        public string PhotographerLink { get; set; }
-    }
-
     private string? email;
     private string city = string.Empty;
     private List<WeatherForecast>? forecasts;
@@ -648,41 +684,71 @@ else
     private string unitSymbol => isCelsius ? "°C" : "°F";
     private string unitDisplay => isCelsius ? "°C" : "°F";
     private bool isAuthorized = false;
+    private bool isLoading = false;
+    private bool isFavoritesLoading = false;
+    private string? favoriteLoading = null;
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("weather.razor OnInitializedAsync started.");
         var token = await LocalStorage.GetItemAsync<string>("authToken");
+        Console.WriteLine($"Token found: {token != null}");
+
         if (string.IsNullOrWhiteSpace(token))
         {
-            Navigation.NavigateTo("/", forceLoad: true);
+            Console.WriteLine("No token, redirecting to /login.");
+            Navigation.NavigateTo("/login", true);
             return;
         }
 
         isAuthorized = true;
+        Console.WriteLine("Authorization set to true.");
 
         var authState = await AuthProvider.GetAuthenticationStateAsync();
         email = authState.User.Identity?.Name;
-        if (email == null)
+        if (string.IsNullOrEmpty(email))
         {
             email = await LocalStorage.GetItemAsync<string>("email");
+            Console.WriteLine($"Email from localStorage: {email}");
         }
 
-        if (email != null)
+        if (!string.IsNullOrEmpty(email))
         {
             favorites = await WeatherService.GetUserFavorites(email);
+            Console.WriteLine($"Favorites loaded: {string.Join(", ", favorites)}");
         }
+
+        var uri = new Uri(Navigation.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        if (query["city"] != null)
+        {
+            city = query["city"];
+            await GetForecast();
+        }
+        Console.WriteLine("weather.razor OnInitializedAsync completed.");
     }
 
-    private async Task Logout()
+
+    private async Task HandleKeyDown(KeyboardEventArgs args) // Updated to use KeyboardEventArgs
     {
-        await AuthService.Logout();
-        ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
-        Navigation.NavigateTo("/register", true);
+        if (args.Key == "Enter")
+        {
+            await GetForecast();
+        }
     }
 
     private async Task GetForecast()
     {
-        if (!string.IsNullOrWhiteSpace(city?.Trim()))
+        if (string.IsNullOrWhiteSpace(city))
+        {
+            Snackbar.Add("Please enter a city name.", Severity.Error);
+            return;
+        }
+
+        isLoading = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
         {
             var normalizedCity = char.ToUpperInvariant(city.Trim()[0]) + city.Trim().Substring(1).ToLowerInvariant();
             forecasts = await WeatherService.GetForecast(normalizedCity);
@@ -692,22 +758,21 @@ else
                 currentWeather = forecasts.FirstOrDefault(f => f.Date.Date == DateTime.Today) ?? forecasts.OrderBy(f => f.Date).First();
                 showEmptyMessage = false;
 
-                var httpClient = ClientFactory.CreateClient("API");
-                var imageResponse = await httpClient.GetAsync($"api/weather/city-image/{Uri.EscapeDataString(normalizedCity)}");
-
-                if (imageResponse.IsSuccessStatusCode)
+                if (!string.IsNullOrEmpty(email))
                 {
-                    cityImage = await imageResponse.Content.ReadFromJsonAsync<CityImageResponse>();
-                }
-                else if (imageResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    cityImage = null;
-                    Snackbar.Add($"No image found for {normalizedCity}", Severity.Warning);
-                }
-                else
-                {
-                    cityImage = null;
-                    Snackbar.Add("Failed to fetch image", Severity.Error);
+                    try
+                    {
+                        cityImage = await WeatherService.GetCityImage(normalizedCity);
+                        if (cityImage == null)
+                        {
+                            Snackbar.Add($"No image found for {normalizedCity}.", Severity.Warning);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        cityImage = null;
+                        Snackbar.Add($"Error fetching city image: {ex.Message}", Severity.Error);
+                    }
                 }
             }
             else
@@ -716,7 +781,13 @@ else
                 cityImage = null;
                 showEmptyMessage = true;
                 forecasts = new List<WeatherForecast>();
+                Snackbar.Add($"No forecast found for {normalizedCity}.", Severity.Warning);
             }
+        }
+        finally
+        {
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -727,7 +798,7 @@ else
 
     private async Task ToggleFavorite()
     {
-        if (currentWeather != null && email != null)
+        if (currentWeather != null && !string.IsNullOrEmpty(email))
         {
             if (IsCityFavorited())
             {
@@ -742,7 +813,7 @@ else
 
     private async Task AddToFavorites(string cityName)
     {
-        if (!string.IsNullOrWhiteSpace(cityName) && email != null && !favorites.Contains(cityName, StringComparer.OrdinalIgnoreCase))
+        if (!string.IsNullOrEmpty(cityName) && !string.IsNullOrEmpty(email) && !favorites.Contains(cityName, StringComparer.OrdinalIgnoreCase))
         {
             try
             {
@@ -752,14 +823,14 @@ else
             }
             catch
             {
-                Snackbar.Add("Failed to add city to favorites", Severity.Error);
+                Snackbar.Add($"Failed to add {cityName} to favorites.", Severity.Error);
             }
         }
     }
 
     private async Task RemoveFromFavorites(string favCity)
     {
-        if (email != null)
+        if (!string.IsNullOrEmpty(email))
         {
             try
             {
@@ -770,14 +841,19 @@ else
             }
             catch
             {
-                Snackbar.Add("Failed to remove city from favorites", Severity.Error);
+                Snackbar.Add($"Failed to remove {favCity} from favorites.", Severity.Error);
             }
         }
     }
 
-    private void ToggleNavMenu()
+    private async Task ToggleNavMenu()
     {
+        isFavoritesLoading = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300); // Simulate brief loading for UI feedback
         showNavMenu = !showNavMenu;
+        isFavoritesLoading = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private void ToggleFavoritesSection()
@@ -787,10 +863,21 @@ else
 
     private async Task SelectFavorite(string favCity)
     {
-        city = favCity;
-        await GetForecast();
-        showNavMenu = false;
-        showFavoritesSection = false;
+        favoriteLoading = favCity;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            city = favCity;
+            await GetForecast();
+            showNavMenu = false;
+            showFavoritesSection = false;
+        }
+        finally
+        {
+            favoriteLoading = null;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private void ToggleUnit()

@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "WeatherAppFrontend",
   "resources": {
-    "hash": "sha256-Ep3RwAzPP8FIt7iB0ugVzGX3AcWU6ru6H2EaW3KHxmU=",
+    "hash": "sha256-dcYKtScYNVv+g0hiQuam8tMQFReaR2rYNL3Eqt8qnQk=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-RiGT44TFZmHOY+Oqvb8o8r+BJVWex6+dPxFxrOiWvFY="
     },
@@ -47,9 +47,14 @@
       "Microsoft.Extensions.Options.wasm": "sha256-5/m+yVFGRuY+N4jQnD+QETKH0AfhAsnVze5dJ5ogIVM=",
       "Microsoft.Extensions.Options.ConfigurationExtensions.wasm": "sha256-C8ZA1VhhrMRPf8Qqv+OrW9za3ggJkCM9i1d8R/F1ETc=",
       "Microsoft.Extensions.Primitives.wasm": "sha256-pVrYOTfjb2ITls3LKIByW1t8jwOAWFhmkIVDewtJ1GE=",
+      "Microsoft.IdentityModel.Abstractions.wasm": "sha256-p5FVXXBeYDcOTqOpKxODRPCX9uqnpReTj0EhsdXjU7s=",
+      "Microsoft.IdentityModel.JsonWebTokens.wasm": "sha256-YbEznZsyE+XvFIz2mh4mGOdRvy+uVRuCwnqkoZRWh+E=",
+      "Microsoft.IdentityModel.Logging.wasm": "sha256-99rl7rrxzgOFMVrt0eMe+ph9KtJL9CdmYG6l7lofmcw=",
+      "Microsoft.IdentityModel.Tokens.wasm": "sha256-C0xc+Y0wyuRxUfP7b5gpVlUcWCYJh0or6eNJXhS6RF0=",
       "Microsoft.JSInterop.wasm": "sha256-d7g3f9JtOaBnsFPEn/JNb6IB3J+n7tbokFB8yaci6hM=",
       "Microsoft.JSInterop.WebAssembly.wasm": "sha256-F6+eBtmi6hZ2nx4YW1ISIsXtdwseO+7hU6U9GzKkn1k=",
       "MudBlazor.wasm": "sha256-hk3yyXPxh53I/YzYWz/gKb46I3S7Z/HFWxMZJJNsFEI=",
+      "System.IdentityModel.Tokens.Jwt.wasm": "sha256-OSw7ojbcNLtRnP2rJkcOfNLO2bhRme/MIlTQIrRnKBo=",
       "System.IO.Pipelines.wasm": "sha256-JqVBy6SV+3qk+IK3VJiyIDt9CsVk6b1/ytTXmrI4mTM=",
       "Microsoft.CSharp.wasm": "sha256-y2IqC4H4X61/uK+89NTIN2q613FwevJQajt76CdcxpU=",
       "Microsoft.VisualBasic.Core.wasm": "sha256-ZQo9N/2H/aWngiLhFtYKHju5mLFZ9pWDha8ZDz6zC7w=",
@@ -219,10 +224,10 @@
       "mscorlib.wasm": "sha256-Im6xq+lOse4P/VnAyrA3hwPstV67V5dB0EwQWcjipyE=",
       "netstandard.wasm": "sha256-PK0GLtj6kQVtZPzq0FZlnSdHh7geujg80LqKdJXA4pI=",
       "System.Private.CoreLib.wasm": "sha256-gEwccs7GbRSPGmeWBOKxNroYfyM+mZ7hqbP3ki1iwX0=",
-      "WeatherAppFrontend.wasm": "sha256-BOwKTZYkW5Z0DAX/+cBG99JQyYG+/fKkwt5rnfspTJM="
+      "WeatherAppFrontend.wasm": "sha256-ECNIhkTtaEwsKDaIjlpJOlKfnpJ2alHpwGSqR6imEoc="
     },
     "pdb": {
-      "WeatherAppFrontend.pdb": "sha256-ASQ7zjjzy43aF6t3nwjXep7dAXwl/+OUEa69hwp3T7g="
+      "WeatherAppFrontend.pdb": "sha256-oOHhLEHQWX/NWn1sMWVEY5RdfSghC8eusyyYOiw6U+A="
     }
   },
   "cacheBootResources": true,

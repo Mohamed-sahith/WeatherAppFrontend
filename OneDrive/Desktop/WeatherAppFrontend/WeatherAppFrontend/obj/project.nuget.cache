@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ZIc7mn6Pi+k=",
+  "dgSpecHash": "LzzbIgziyr4=",
   "success": true,
   "projectFilePath": "C:\\Users\\salma\\OneDrive\\Desktop\\WeatherAppFrontend\\WeatherAppFrontend\\WeatherAppFrontend.csproj",
   "expectedPackageFiles": [
@@ -35,12 +35,17 @@
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.extensions.options\\8.0.2\\microsoft.extensions.options.8.0.2.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\8.0.0\\microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "C:\\Users\\salma\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.12.0\\microsoft.identitymodel.abstractions.8.12.0.nupkg.sha512",
+    "C:\\Users\\salma\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.12.0\\microsoft.identitymodel.jsonwebtokens.8.12.0.nupkg.sha512",
+    "C:\\Users\\salma\\.nuget\\packages\\microsoft.identitymodel.logging\\8.12.0\\microsoft.identitymodel.logging.8.12.0.nupkg.sha512",
+    "C:\\Users\\salma\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.12.0\\microsoft.identitymodel.tokens.8.12.0.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.jsinterop\\8.0.16\\microsoft.jsinterop.8.0.16.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.jsinterop.webassembly\\8.0.16\\microsoft.jsinterop.webassembly.8.0.16.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.15\\microsoft.net.illink.tasks.8.0.15.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\9.0.4\\microsoft.net.sdk.webassembly.pack.9.0.4.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\mudblazor\\7.7.0\\mudblazor.7.7.0.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\system.diagnostics.diagnosticsource\\8.0.0\\system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512",
+    "C:\\Users\\salma\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.12.0\\system.identitymodel.tokens.jwt.8.12.0.nupkg.sha512",
     "C:\\Users\\salma\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512"
   ],
   "logs": []

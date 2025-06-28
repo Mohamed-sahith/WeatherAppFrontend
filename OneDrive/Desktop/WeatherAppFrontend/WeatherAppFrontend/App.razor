@@ -1,12 +1,49 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(WeatherAppFrontend.Layout.MainLayout)">
+                <NotAuthorized>
+                    <MudText Typo="Typo.h5" Style="text-align: center; padding: 2rem; color: white;">
+                        You are not authorized. Please <MudLink Href="/login">sign in</MudLink>.
+                    </MudText>
+                    @if (NavigationManager.Uri != "/login" && NavigationManager.Uri != "/")
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RedirectToLogin">
+                            Go to Login
+                        </MudButton>
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(WeatherAppFrontend.Layout.MainLayout)">
+                <MudText Typo="Typo.h5" Style="text-align: center; padding: 2rem; color: white;">
+                    Page not found
+                </MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RedirectToHome">
+                    Go to Home
+                </MudButton>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+@code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private void RedirectToLogin()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+
+    private void RedirectToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

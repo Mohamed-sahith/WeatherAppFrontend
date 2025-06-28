@@ -1,12 +1,12 @@
-﻿@page "/"
+﻿@page "/login"
 @using WeatherAppFrontend.Services
 @using WeatherAppFrontend.Auth
 @using WeatherAppFrontend.Models.DTOs
-@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthService AuthService
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthProvider
-@inject IJSRuntime JSRuntime
+@inject MudBlazor.ISnackbar Snackbar
+@using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazor
 
 <MudThemeProvider />
@@ -165,16 +165,8 @@
     }
 
     @@keyframes spin {
-        0%
-
-    {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .loading-text {
@@ -216,10 +208,8 @@
     }
 </style>
 
-<!-- Weather Background -->
 <div class="weather-bg"></div>
 
-<!-- Loading Overlay -->
 <div class="loading-overlay @(isLoading ? "show" : "")" id="loadingOverlay">
     <div style="display: flex; flex-direction: column; align-items: center;">
         <div class="simple-loader"></div>
@@ -227,49 +217,34 @@
     </div>
 </div>
 
-<!-- Main Content -->
 <div class="glass-container">
     <div class="glass-card">
-        <!-- Header -->
         <div style="text-align: center; margin-bottom: 2rem;">
             <MudIcon Icon="@Icons.Material.Filled.Lock" Class="weather-icon" />
-            <MudText Typo="Typo.h4" Class="title-gradient">
-                Welcome Back
-            </MudText>
-            <MudText Class="subtitle-text">
-                Sign in to continue to WeatherApp
-            </MudText>
+            <MudText Typo="Typo.h4" Class="title-gradient">Welcome Back</MudText>
+            <MudText Class="subtitle-text">Sign in to continue to WeatherApp</MudText>
         </div>
 
-        <!-- Login Form -->
         <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
+            <ValidationSummary />
+            <MudText Color="@(IsFormValid ? Color.Success : Color.Error)">
+                @(IsFormValid ? "Valid" : "Invalid")
+            </MudText>
 
             <div style="margin-bottom: 1.5rem;">
-                <MudTextField @bind-Value="loginModel.Email"
-                              Placeholder="Email Address"
-                              Variant="Variant.Outlined"
-                              Class="glass-input"
-                              Style="width: 100%;"
-                              InputType="InputType.Email"
-                              AdornmentIcon="@Icons.Material.Filled.Email"
-                              Adornment="Adornment.Start" />
+                <MudTextField @bind-Value="loginModel.Email" Placeholder="Email Address" Variant="Variant.Outlined"
+                              Class="glass-input" Style="width: 100%;" InputType="InputType.Email"
+                              AdornmentIcon="@Icons.Material.Filled.Email" Adornment="Adornment.Start" />
             </div>
 
             <div style="margin-bottom: 2rem;">
-                <MudTextField @bind-Value="loginModel.Password"
-                              Placeholder="Password"
-                              Variant="Variant.Outlined"
-                              Class="glass-input"
-                              Style="width: 100%;"
-                              InputType="InputType.Password"
-                              AdornmentIcon="@Icons.Material.Filled.VpnKey"
-                              Adornment="Adornment.Start" />
+                <MudTextField @bind-Value="loginModel.Password" Placeholder="Password" Variant="Variant.Outlined"
+                              Class="glass-input" Style="width: 100%;" InputType="InputType.Password"
+                              AdornmentIcon="@Icons.Material.Filled.VpnKey" Adornment="Adornment.Start" />
             </div>
 
-            <MudButton Variant="Variant.Filled"
-                       ButtonType="ButtonType.Submit"
-                       Disabled="@(!IsFormValid || isLoading)"
+            <MudButton Variant="Variant.Filled" OnClick="HandleLogin" Disabled="@(!IsFormValid || isLoading)"
                        Class="weather-button">
                 @if (isLoading)
                 {
@@ -284,14 +259,11 @@
             </MudButton>
         </EditForm>
 
-        <!-- Footer -->
         <div class="divider"></div>
         <div style="text-align: center;">
             <MudText Typo="Typo.body2" Style="color: rgba(255, 255, 255, 0.7);">
                 Don't have an account?
-                <MudLink Href="/Register" Class="signin-link" Style="margin-left: 0.5rem;">
-                    Create Account
-                </MudLink>
+                <MudLink Href="/" Class="signin-link" Style="margin-left: 0.5rem;">Create Account</MudLink>
             </MudText>
         </div>
     </div>
@@ -304,29 +276,41 @@
 
     private async Task HandleLogin()
     {
+        Console.WriteLine($"HandleLogin triggered at {DateTime.Now} with Email: {loginModel.Email}, Password: {loginModel.Password}");
+        if (AuthService == null)
+        {
+            Console.WriteLine("AuthService is null.");
+            Snackbar.Add("An error occurred. Please refresh.", Severity.Error);
+            return;
+        }
+
         isLoading = true;
         StateHasChanged();
 
-        // Simulate loading time for better UX
-        await Task.Delay(1500);
-
-        var success = await AuthService.Login(loginModel);
-
-        isLoading = false;
-        StateHasChanged();
-
-        if (success)
+        try
         {
-            Snackbar.Add("Login successful!", Severity.Success);
-            ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
-            Navigation.NavigateTo("/weather");
+            var result = await AuthService.Login(loginModel);
+            Console.WriteLine($"Login result: Token length = {result.Token?.Length ?? 0}");
+            isLoading = false;
+            StateHasChanged();
+
+            if (!string.IsNullOrEmpty(result.Token))
+            {
+                Snackbar.Add("Login successful!", Severity.Success);
+                ((CustomAuthProvider)AuthProvider).NotifyAuthChanged();
+                Navigation.NavigateTo("/weather");
+            }
+            else
+            {
+                Snackbar.Add("Login failed. Please try again.", Severity.Error);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Snackbar.Add("Login failed. Please try again.", Severity.Error);
+            Console.WriteLine($"HandleLogin error: {ex.Message}");
+            isLoading = false;
+            StateHasChanged();
+            Snackbar.Add("Login error occurred.", Severity.Error);
         }
     }
-
-    [Inject]
-    public ISnackbar Snackbar { get; set; }
 }
