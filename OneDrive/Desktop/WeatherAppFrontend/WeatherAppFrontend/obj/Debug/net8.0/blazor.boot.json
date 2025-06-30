@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "WeatherAppFrontend",
   "resources": {
-    "hash": "sha256-dcYKtScYNVv+g0hiQuam8tMQFReaR2rYNL3Eqt8qnQk=",
+    "hash": "sha256-DkJnwVrwa0UnZVcIlGw9+C6xPzXvb6ZCszFOKHqnW4c=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-RiGT44TFZmHOY+Oqvb8o8r+BJVWex6+dPxFxrOiWvFY="
     },
@@ -224,10 +224,10 @@
       "mscorlib.wasm": "sha256-Im6xq+lOse4P/VnAyrA3hwPstV67V5dB0EwQWcjipyE=",
       "netstandard.wasm": "sha256-PK0GLtj6kQVtZPzq0FZlnSdHh7geujg80LqKdJXA4pI=",
       "System.Private.CoreLib.wasm": "sha256-gEwccs7GbRSPGmeWBOKxNroYfyM+mZ7hqbP3ki1iwX0=",
-      "WeatherAppFrontend.wasm": "sha256-ECNIhkTtaEwsKDaIjlpJOlKfnpJ2alHpwGSqR6imEoc="
+      "WeatherAppFrontend.wasm": "sha256-iojiFubmaiqH8knizJxc77lTpWXKA1Wi3Caj+UpdZdw="
     },
     "pdb": {
-      "WeatherAppFrontend.pdb": "sha256-oOHhLEHQWX/NWn1sMWVEY5RdfSghC8eusyyYOiw6U+A="
+      "WeatherAppFrontend.pdb": "sha256-gvGjB7A8TPa6ZoxoYd8EYOlrAEemtW3P9+Xl+CaGLg8="
     }
   },
   "cacheBootResources": true,

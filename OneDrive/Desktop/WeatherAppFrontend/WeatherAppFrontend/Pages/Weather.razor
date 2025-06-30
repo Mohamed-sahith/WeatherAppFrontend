@@ -295,6 +295,8 @@
         gap: 1rem;
         flex-wrap: wrap;
         padding: 1rem;
+        position: relative;
+        z-index: 1000;
     }
 
     .mud-input {
@@ -381,6 +383,65 @@
             margin-left: 0;
         }
     }
+
+    .mud-autocomplete .mud-input {
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(15px);
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+        .mud-autocomplete .mud-input:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+        }
+
+        .mud-autocomplete .mud-input input::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+    .mud-autocomplete .mud-input-adorned-start {
+        padding-left: 12px !important;
+    }
+
+    /* Fixed style for autocomplete dropdown */
+    .mud-popover.mud-autocomplete-paper {
+        position: absolute !important;
+        width: 300px !important;
+        max-height: 200px !important;
+        overflow-y: auto !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(15px) !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+        z-index: 1500 !important;
+        left: 0 !important;
+        transform: translateY(5px) !important;
+        min-height: 0 !important;
+    }
+
+        .mud-popover.mud-autocomplete-paper .mud-list {
+            padding: 0 !important;
+        }
+
+        .mud-popover.mud-autocomplete-paper .mud-list-item {
+            color: blueviolet !important;
+            padding: 8px 16px !important;
+            transition: background 0.2s ease !important;
+            min-height: 36px !important;
+        }
+
+            .mud-popover.mud-autocomplete-paper .mud-list-item:hover {
+                background: rgba(255, 255, 255, 0.15) !important;
+            }
+
+    .mud-primary-text {
+        color: white !important;
+        --mud-ripple-color: rgba(255, 255, 255, 0.5) !important;
+    }
 </style>
 
 <!-- Authentication Guard -->
@@ -448,22 +509,28 @@ else
 
     <MudContainer MaxWidth="MaxWidth.Large" Style="padding-top: 64px; position: relative; z-index: 10; margin-left: 60px;">
         <!-- Search Section with Unit Toggle -->
-        <div class="glass-container" style="padding: 2rem; margin-bottom: 0;">
+        <div class="glass-container" style="padding: 2rem; margin-bottom: 0; margin-top: -1.5rem;">
             <div class="search-container">
-                <MudTextField @bind-Value="city"
-                              Placeholder="Enter city name"
-                              Variant="Variant.Outlined"
-                              Class="glass-input"
-                              AdornmentIcon="@Icons.Material.Filled.LocationOn"
-                              Adornment="Adornment.Start"
-                              Style="min-width: 300px;"
-                              @onkeydown="@HandleKeyDown" /> <!-- Corrected event binding -->
+                <MudAutocomplete T="GeoCityResult"
+                                 Value="SelectedCity"
+                                 ValueChanged="@OnCitySelected"
+                                 ToStringFunc="@(c => c?.Name)"
+                                 SearchFunc="SearchCities"
+                                 MinCharacters="2"
+                                 ResetValueOnEmptyText="true"
+                                 Placeholder="Enter city name"
+                                 Variant="Variant.Outlined"
+                                 Class="glass-input"
+                                 AdornmentIcon="@Icons.Material.Filled.LocationOn"
+                                 Adornment="Adornment.Start"
+                                 Style="min-width: 300px;"
+                                 AutoCompleteOnKeyDown="@HandleKeyDown" />
 
                 <MudButton Variant="Variant.Filled"
                            Class="glass-button"
-                           OnClick="GetForecast"
+                           OnClick="@(() => GetWeatherForecastAsync(SelectedCity?.Name))"
                            Style="min-width: 150px; height: 56px; display: flex; align-items: center; justify-content: center;"
-                           Disabled="@isLoading">
+                           Disabled="@(isLoading || SelectedCity == null)">
                     <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" /> Get Weather
                     @if (isLoading)
                     {
@@ -687,6 +754,18 @@ else
     private bool isLoading = false;
     private bool isFavoritesLoading = false;
     private string? favoriteLoading = null;
+    private GeoCityResult? SelectedCity;
+
+    public class GeoCityResult
+    {
+        public string Name { get; set; } = default!;
+        public string Country { get; set; } = default!;
+        public string State { get; set; } = default!;
+        public double Lat { get; set; }
+        public double Lon { get; set; }
+
+        public override string ToString() => $"{Name}, {State}, {Country}";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -723,28 +802,285 @@ else
         if (query["city"] != null)
         {
             city = query["city"];
-            await GetForecast();
+            SelectedCity = new GeoCityResult { Name = city };
+            await GetWeatherForecastAsync(city);
         }
         Console.WriteLine("weather.razor OnInitializedAsync completed.");
     }
 
-
-    private async Task HandleKeyDown(KeyboardEventArgs args) // Updated to use KeyboardEventArgs
+    private async Task HandleKeyDown(KeyboardEventArgs args)
     {
-        if (args.Key == "Enter")
+        if (args.Key == "Enter" && SelectedCity != null)
         {
-            await GetForecast();
+            await GetWeatherForecastAsync(SelectedCity.Name);
         }
     }
 
-    private async Task GetForecast()
+    private async Task<IEnumerable<GeoCityResult>> SearchCities(string value, CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(city))
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
+            return Array.Empty<GeoCityResult>();
+
+        var apiResults = new List<GeoCityResult>();
+        try
         {
-            Snackbar.Add("Please enter a city name.", Severity.Error);
+            var client = ClientFactory.CreateClient("API");
+            apiResults = await client.GetFromJsonAsync<List<GeoCityResult>>(
+                $"api/weather/search-cities?q={value}", token) ?? new List<GeoCityResult>();
+
+            // Filter API results for starts-with match (case-insensitive)
+            apiResults = apiResults
+                .Where(r => r.Name.ToLower().StartsWith(value.ToLower()))
+                .DistinctBy(r => r.Name)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error searching cities from API: {ex.Message}");
+            // Optionally show a snackbar or log for user feedback
+        }
+
+        // Hardcoded fallback cities
+        var hardcodedCities = new List<GeoCityResult>
+        {
+            new GeoCityResult { Name = "Mumbai", Country = "India", State = "Maharashtra" },
+            new GeoCityResult { Name = "Bangalore", Country = "India", State = "Karnataka" },
+            new GeoCityResult { Name = "Chennai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Kolkata", Country = "India", State = "West Bengal" },
+            new GeoCityResult { Name = "Hyderabad", Country = "India", State = "Telangana" },
+            new GeoCityResult { Name = "Pune", Country = "India", State = "Maharashtra" },
+            new GeoCityResult { Name = "Ahmedabad", Country = "India", State = "Gujarat" },
+            new GeoCityResult { Name = "Jaipur", Country = "India", State = "Rajasthan" },
+            new GeoCityResult { Name = "Surat", Country = "India", State = "Gujarat" },
+            new GeoCityResult { Name = "Lucknow", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Kanpur", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Nagpur", Country = "India", State = "Maharashtra" },
+            new GeoCityResult { Name = "Indore", Country = "India", State = "Madhya Pradesh" },
+            new GeoCityResult { Name = "Bhopal", Country = "India", State = "Madhya Pradesh" },
+            new GeoCityResult { Name = "Patna", Country = "India", State = "Bihar" },
+            new GeoCityResult { Name = "Ludhiana", Country = "India", State = "Punjab" },
+            new GeoCityResult { Name = "Agra", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Nashik", Country = "India", State = "Maharashtra" },
+            new GeoCityResult { Name = "Vadodara", Country = "India", State = "Gujarat" },
+            new GeoCityResult { Name = "Varanasi", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Amritsar", Country = "India", State = "Punjab" },
+            new GeoCityResult { Name = "Visakhapatnam", Country = "India", State = "Andhra Pradesh" },
+            new GeoCityResult { Name = "Coimbatore", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Thiruvananthapuram", Country = "India", State = "Kerala" },
+            new GeoCityResult { Name = "Kochi", Country = "India", State = "Kerala" },
+            new GeoCityResult { Name = "Madurai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Jodhpur", Country = "India", State = "Rajasthan" },
+            new GeoCityResult { Name = "Raipur", Country = "India", State = "Chhattisgarh" },
+            new GeoCityResult { Name = "Ranchi", Country = "India", State = "Jharkhand" },
+            new GeoCityResult { Name = "Guwahati", Country = "India", State = "Assam" },
+            new GeoCityResult { Name = "Dehradun", Country = "India", State = "Uttarakhand" },
+            new GeoCityResult { Name = "Chandigarh", Country = "India", State = "Chandigarh" },
+            new GeoCityResult { Name = "Mysore", Country = "India", State = "Karnataka" },
+            new GeoCityResult { Name = "Tiruchirappalli", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Udaipur", Country = "India", State = "Rajasthan" },
+            new GeoCityResult { Name = "Gwalior", Country = "India", State = "Madhya Pradesh" },
+            new GeoCityResult { Name = "Jabalpur", Country = "India", State = "Madhya Pradesh" },
+            new GeoCityResult { Name = "Meerut", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Noida", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Ghaziabad", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Allahabad", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Hubli", Country = "India", State = "Karnataka" },
+            new GeoCityResult { Name = "Jamshedpur", Country = "India", State = "Jharkhand" },
+            new GeoCityResult { Name = "Tirupati", Country = "India", State = "Andhra Pradesh" },
+            new GeoCityResult { Name = "Warangal", Country = "India", State = "Telangana" },
+            new GeoCityResult { Name = "Vijayawada", Country = "India", State = "Andhra Pradesh" },
+            new GeoCityResult { Name = "Ooty", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Shimla", Country = "India", State = "Himachal Pradesh" },
+
+            // Additional Tamil Nadu cities and districts (top 60+)
+            new GeoCityResult { Name = "Coimbatore", Country = "India", State = "Tamil Nadu" }, // Already listed, kept for completeness
+            new GeoCityResult { Name = "Madurai", Country = "India", State = "Tamil Nadu" }, // Already listed, kept for completeness
+            new GeoCityResult { Name = "Tiruchirappalli", Country = "India", State = "Tamil Nadu" }, // Already listed, kept for completeness
+            new GeoCityResult { Name = "Salem", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Erode", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Vellore", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Thanjavur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Dindigul", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Villupuram", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tirunelveli", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Kanyakumari", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Kanchipuram", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Cuddalore", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Karur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Namakkal", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Perambalur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Pudukkottai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Ramanathapuram", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Sivaganga", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Theni", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Thoothukudi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tiruvallur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tiruvannamalai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Virudhunagar", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Ariyalur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Chengalpattu", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Dharmapuri", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Kallakurichi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Krishnagiri", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Mayiladuthurai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Nagapattinam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Ranipet", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tenkasi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tiruppur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Kumbakonam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Hosur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Karambai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Attur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Arakkonam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Ambur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Bhavani", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Chengam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Gobichettipalayam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Jayankondam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Karaikudi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Manamadurai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Mayiladuthurai", Country = "India", State = "Tamil Nadu" }, // Duplicate, kept for consistency
+            new GeoCityResult { Name = "Nagercoil", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Oddanchatram", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Palladam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Paramakudi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Pollachi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Ponneri", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Rameswaram", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Sathyamangalam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Sivakasi", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tenkasi", Country = "India", State = "Tamil Nadu" }, // Duplicate, kept for consistency
+            new GeoCityResult { Name = "Thiruvarur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Tiruvannamalai", Country = "India", State = "Tamil Nadu" }, // Duplicate, kept for consistency
+            new GeoCityResult { Name = "Usilampatti", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Valliyur", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Vedaranyam", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "London", Country = "United Kingdom", State = "" },
+            new GeoCityResult { Name = "Paris", Country = "France", State = "" },
+            new GeoCityResult { Name = "New York City", Country = "United States", State = "New York" },
+            new GeoCityResult { Name = "Tokyo", Country = "Japan", State = "" },
+            new GeoCityResult { Name = "Bangkok", Country = "Thailand", State = "" },
+            new GeoCityResult { Name = "Dubai", Country = "United Arab Emirates", State = "" },
+            new GeoCityResult { Name = "Singapore", Country = "Singapore", State = "" },
+            new GeoCityResult { Name = "Rome", Country = "Italy", State = "" },
+            new GeoCityResult { Name = "Istanbul", Country = "Turkey", State = "" },
+            new GeoCityResult { Name = "Barcelona", Country = "Spain", State = "" },
+            new GeoCityResult { Name = "Amsterdam", Country = "Netherlands", State = "" },
+            new GeoCityResult { Name = "Hong Kong", Country = "China", State = "" },
+            new GeoCityResult { Name = "Los Angeles", Country = "United States", State = "California" },
+            new GeoCityResult { Name = "Madrid", Country = "Spain", State = "" },
+            new GeoCityResult { Name = "Seoul", Country = "South Korea", State = "" },
+            new GeoCityResult { Name = "Chicago", Country = "United States", State = "Illinois" },
+            new GeoCityResult { Name = "Miami", Country = "United States", State = "Florida" },
+            new GeoCityResult { Name = "Sydney", Country = "Australia", State = "New South Wales" },
+            new GeoCityResult { Name = "Melbourne", Country = "Australia", State = "Victoria" },
+            new GeoCityResult { Name = "Toronto", Country = "Canada", State = "Ontario" },
+            new GeoCityResult { Name = "Vancouver", Country = "Canada", State = "British Columbia" },
+            new GeoCityResult { Name = "Berlin", Country = "Germany", State = "" },
+            new GeoCityResult { Name = "Munich", Country = "Germany", State = "Bavaria" },
+            new GeoCityResult { Name = "Vienna", Country = "Austria", State = "" },
+            new GeoCityResult { Name = "Prague", Country = "Czech Republic", State = "" },
+            new GeoCityResult { Name = "Lisbon", Country = "Portugal", State = "" },
+            new GeoCityResult { Name = "Athens", Country = "Greece", State = "" },
+            new GeoCityResult { Name = "Copenhagen", Country = "Denmark", State = "" },
+            new GeoCityResult { Name = "Stockholm", Country = "Sweden", State = "" },
+            new GeoCityResult { Name = "Oslo", Country = "Norway", State = "" },
+            new GeoCityResult { Name = "Zurich", Country = "Switzerland", State = "" },
+            new GeoCityResult { Name = "Geneva", Country = "Switzerland", State = "" },
+            new GeoCityResult { Name = "Dublin", Country = "Ireland", State = "" },
+            new GeoCityResult { Name = "Edinburgh", Country = "United Kingdom", State = "Scotland" },
+            new GeoCityResult { Name = "Moscow", Country = "Russia", State = "" },
+            new GeoCityResult { Name = "St. Petersburg", Country = "Russia", State = "" },
+            new GeoCityResult { Name = "Beijing", Country = "China", State = "" },
+            new GeoCityResult { Name = "Shanghai", Country = "China", State = "" },
+            new GeoCityResult { Name = "Mumbai", Country = "India", State = "Maharashtra" },
+            new GeoCityResult { Name = "Delhi", Country = "India", State = "Delhi" },
+            new GeoCityResult { Name = "Bangalore", Country = "India", State = "Karnataka" },
+            new GeoCityResult { Name = "Chennai", Country = "India", State = "Tamil Nadu" },
+            new GeoCityResult { Name = "Kolkata", Country = "India", State = "West Bengal" },
+            new GeoCityResult { Name = "Hyderabad", Country = "India", State = "Telangana" },
+            new GeoCityResult { Name = "Pune", Country = "India", State = "Maharashtra" },
+            new GeoCityResult { Name = "Jaipur", Country = "India", State = "Rajasthan" },
+            new GeoCityResult { Name = "Ahmedabad", Country = "India", State = "Gujarat" },
+            new GeoCityResult { Name = "Surat", Country = "India", State = "Gujarat" },
+            new GeoCityResult { Name = "Rio de Janeiro", Country = "Brazil", State = "" },
+            new GeoCityResult { Name = "São Paulo", Country = "Brazil", State = "" },
+            new GeoCityResult { Name = "Buenos Aires", Country = "Argentina", State = "" },
+            new GeoCityResult { Name = "Cape Town", Country = "South Africa", State = "Western Cape" },
+            new GeoCityResult { Name = "Johannesburg", Country = "South Africa", State = "Gauteng" },
+            new GeoCityResult { Name = "Cairo", Country = "Egypt", State = "" },
+            new GeoCityResult { Name = "Casablanca", Country = "Morocco", State = "" },
+            new GeoCityResult { Name = "Nairobi", Country = "Kenya", State = "" },
+            new GeoCityResult { Name = "Lagos", Country = "Nigeria", State = "" },
+            new GeoCityResult { Name = "Manila", Country = "Philippines", State = "" },
+            new GeoCityResult { Name = "Kuala Lumpur", Country = "Malaysia", State = "" },
+            new GeoCityResult { Name = "Jakarta", Country = "Indonesia", State = "" },
+            new GeoCityResult { Name = "Hanoi", Country = "Vietnam", State = "" },
+            new GeoCityResult { Name = "Ho Chi Minh City", Country = "Vietnam", State = "" },
+            new GeoCityResult { Name = "Qatar", Country = "Qatar", State = "" },
+            new GeoCityResult { Name = "Abu Dhabi", Country = "United Arab Emirates", State = "" },
+            new GeoCityResult { Name = "Riyadh", Country = "Saudi Arabia", State = "" },
+            new GeoCityResult { Name = "Mexico City", Country = "Mexico", State = "" },
+            new GeoCityResult { Name = "Cancun", Country = "Mexico", State = "Quintana Roo" },
+            new GeoCityResult { Name = "Havana", Country = "Cuba", State = "" },
+            new GeoCityResult { Name = "San Francisco", Country = "United States", State = "California" },
+            new GeoCityResult { Name = "Las Vegas", Country = "United States", State = "Nevada" },
+            new GeoCityResult { Name = "Orlando", Country = "United States", State = "Florida" },
+            new GeoCityResult { Name = "Honolulu", Country = "United States", State = "Hawaii" },
+            new GeoCityResult { Name = "Quebec City", Country = "Canada", State = "Quebec" },
+            new GeoCityResult { Name = "Montreal", Country = "Canada", State = "Quebec" },
+            new GeoCityResult { Name = "Brussels", Country = "Belgium", State = "" },
+            new GeoCityResult { Name = "Venice", Country = "Italy", State = "" },
+            new GeoCityResult { Name = "Florence", Country = "Italy", State = "" },
+            new GeoCityResult { Name = "Budapest", Country = "Hungary", State = "" },
+            new GeoCityResult { Name = "Warsaw", Country = "Poland", State = "" },
+            new GeoCityResult { Name = "Krakow", Country = "Poland", State = "" },
+            new GeoCityResult { Name = "Athens", Country = "Greece", State = "" },
+            new GeoCityResult { Name = "Santorini", Country = "Greece", State = "" },
+            new GeoCityResult { Name = "Dubrovnik", Country = "Croatia", State = "" },
+            new GeoCityResult { Name = "Split", Country = "Croatia", State = "" },
+            new GeoCityResult { Name = "Marrakech", Country = "Morocco", State = "" },
+            new GeoCityResult { Name = "Agra", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Goa", Country = "India", State = "Goa" },
+            new GeoCityResult { Name = "Varanasi", Country = "India", State = "Uttar Pradesh" },
+            new GeoCityResult { Name = "Kyoto", Country = "Japan", State = "" },
+            new GeoCityResult { Name = "Osaka", Country = "Japan", State = "" },
+            new GeoCityResult { Name = "Viluppuram", Country = "India", State = "Tamil Nadu" } // Alternate spelling
+        };
+
+        // Filter hardcoded cities to match only at the start (case-insensitive)
+        var filteredHardcoded = hardcodedCities
+            .Where(r => string.IsNullOrEmpty(value) || r.Name.ToLower().StartsWith(value.ToLower()))
+            .ToList();
+
+        // Combine API results with hardcoded cities, removing duplicates based on Name
+        var allResults = apiResults.Concat(filteredHardcoded)
+            .GroupBy(r => r.Name.ToLower())
+            .Select(g => g.First())
+            .ToList();
+
+        return allResults;
+    }
+
+    private async Task OnCitySelected(GeoCityResult? city)
+    {
+        SelectedCity = city;
+        if (city != null)
+        {
+            await GetWeatherForecastAsync(city.Name);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task GetWeatherForecastAsync(string? cityName)
+    {
+        if (string.IsNullOrWhiteSpace(cityName))
+        {
+            Snackbar.Add("Please select a city.", Severity.Error);
             return;
         }
 
+        city = cityName;
         isLoading = true;
         await InvokeAsync(StateHasChanged);
 
@@ -869,7 +1205,8 @@ else
         try
         {
             city = favCity;
-            await GetForecast();
+            SelectedCity = new GeoCityResult { Name = favCity };
+            await GetWeatherForecastAsync(favCity);
             showNavMenu = false;
             showFavoritesSection = false;
         }

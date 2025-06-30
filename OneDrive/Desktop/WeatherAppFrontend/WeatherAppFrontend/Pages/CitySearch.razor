@@ -1,0 +1,44 @@
+﻿@using MudBlazor
+@inject IHttpClientFactory ClientFactory
+
+<MudAutocomplete T="GeoCityResult"
+                 @bind-Value="SelectedCity"
+                 ToStringFunc="@(city => $"{city?.Name}, {city?.Country}")"
+                 SearchFunc="SearchCities"
+                 MinCharacters="2"
+                 ResetValueOnEmptyText="true"
+                 Placeholder="Search for city..." />
+
+@if (SelectedCity != null)
+{
+    <p>You selected: @SelectedCity.Name (@SelectedCity.Country)</p>
+    <p>Lat: @SelectedCity.Lat, Lon: @SelectedCity.Lon</p>
+    <!-- Optional: trigger weather fetch here -->
+}
+
+@code {
+    private GeoCityResult SelectedCity;
+
+    private async Task<IEnumerable<GeoCityResult>> SearchCities(string value, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
+            return Array.Empty<GeoCityResult>();
+
+        var client = ClientFactory.CreateClient("API"); // 🟢 Uses the configured backend URL
+        var result = await client.GetFromJsonAsync<List<GeoCityResult>>(
+            $"api/weather/search-cities?q={value}", token);
+
+        return result ?? new();
+    }
+
+    public class GeoCityResult
+    {
+        public string Name { get; set; }
+        public string Country { get; set; }
+        public string State { get; set; }
+        public double Lat { get; set; }
+        public double Lon { get; set; }
+
+        public override string ToString() => $"{Name}";
+    }
+}

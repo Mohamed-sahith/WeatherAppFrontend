@@ -1,10 +1,10 @@
 ﻿@page "/userprofile"
-@* @attribute [Authorize] *@
+@attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Blazored.LocalStorage
 @using WeatherAppFrontend.Services
-@using Microsoft.JSInterop  
+@using Microsoft.JSInterop
 @using WeatherAppFrontend.Layout
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthProvider
@@ -12,7 +12,7 @@
 @inject WeatherService WeatherService
 @inject MudBlazor.ISnackbar Snackbar
 @using MudBlazor
-@* @rendermode InteractiveWebAssembly *@
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -40,6 +40,11 @@
         margin: 2rem auto;
         max-width: 600px;
         color: white;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Ensure container takes full height */
+        min-height: calc(100vh - rem); /* Adjust based on margin */
     }
 
     .favorite-item {
@@ -55,6 +60,30 @@
         .favorite-item:hover {
             background: rgba(255, 255, 255, 0.15);
         }
+
+    .search-container {
+        margin-bottom: 1rem;
+    }
+
+    .email-icon {
+        vertical-align: middle;
+        margin-right: 0.5rem;
+        margin-bottom: 0.2rem; /* Slightly move down for better alignment */
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: auto; /* Push buttons to the bottom */
+        padding: 0.5rem;
+        background: inherit; /* Match glass-container background */
+        border-radius: 8px;
+    }
+
+    .glass-input input {
+        color: white !important; /* Ensure white text color for search box */
+    }
 
     @@keyframes gradientBG {
         0% {
@@ -76,15 +105,39 @@
 <MudContainer Style="padding-top: 64px; position: relative; z-index: 10;">
     <div class="glass-container">
         <MudText Typo="Typo.h5">User Profile</MudText>
-        <MudText Typo="Typo.body1">Email: @email</MudText>
-        <MudText Typo="Typo.h6" Style="margin-top: 1rem;">Favorite Cities</MudText>
+        <MudText Typo="Typo.body1">
+            <MudIcon Icon="@GetIconForEmail()" Class="email-icon" /> Email: @email
+        </MudText>
+        <MudText Typo="Typo.h6" Style="margin-top: 1rem;"> Favorite Cities :</MudText>
+
+        <div class="search-container">
+            <MudTextField @bind-Value="searchTerm"
+                          Placeholder="Search favorite cities..."
+                          Variant="Variant.Outlined"
+                          Class="glass-input"
+                          Style="min-width: 200px; margin-bottom: 1rem;"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Immediate="true" />
+        </div>
+
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Secondary"
+                   OnClick="ToggleSort"
+                   Style="margin-bottom: 1rem;">
+            Sort: @(isAscending ? "A-Z" : "Z-A")
+        </MudButton>
+
         @if (favorites?.Any() ?? false)
         {
-            @foreach (var city in favorites)
+            var filteredFavorites = favorites
+            .Where(f => string.IsNullOrWhiteSpace(searchTerm) || f.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(f => f, isAscending ? StringComparer.OrdinalIgnoreCase : Comparer<string>.Create((a, b) => b.CompareTo(a)));
+
+            @foreach (var city in filteredFavorites)
             {
                 <div class="favorite-item">
                     <MudText Typo="Typo.body2" Class="me-2">City: @city</MudText>
-
                     <div class="d-flex align-center gap-2">
                         <MudButton OnClick="() => NavigateToWeather(city)"
                                    Variant="Variant.Outlined"
@@ -92,7 +145,6 @@
                                    Size="Size.Small">
                             Go
                         </MudButton>
-
                         <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                        Color="Color.Error"
                                        Size="Size.Small"
@@ -105,15 +157,22 @@
         {
             <MudText Typo="Typo.body1" Style="color: rgba(255, 255, 255, 0.6);">No favorite cities added yet.</MudText>
         }
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="margin-top: 1rem;" OnClick="GoBack">
-            Back to Weather
-        </MudButton>
+        <div class="button-container">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoBack">
+                Back to Weather
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Logout">
+                Logout
+            </MudButton>
+        </div>
     </div>
 </MudContainer>
 
 @code {
     private string? email;
     private List<string>? favorites;
+    private string searchTerm = string.Empty;
+    private bool isAscending = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,5 +222,45 @@
     private void GoBack()
     {
         Navigation.NavigateTo("/weather");
+    }
+
+    private void ToggleSort()
+    {
+        isAscending = !isAscending;
+        StateHasChanged();
+    }
+
+    private string GetIconForEmail()
+    {
+        if (string.IsNullOrEmpty(email)) return Icons.Material.Filled.Person;
+        char firstLetter = email[0];
+        return firstLetter switch
+        {
+            'A' or 'B' or 'C' => Icons.Material.Filled.Cloud,
+            'D' or 'E' or 'F' => Icons.Material.Filled.WbSunny,
+            'G' or 'H' or 'I' => Icons.Material.Filled.WaterDrop,
+            'J' or 'K' or 'L' => Icons.Material.Filled.Air,
+            'M' or 'N' or 'O' => Icons.Material.Filled.Thermostat,
+            'P' or 'Q' or 'R' => Icons.Material.Filled.LocationOn,
+            'S' or 'T' or 'U' => Icons.Material.Filled.Home,
+            'V' or 'W' or 'X' => Icons.Material.Filled.WaterDrop,
+            'Y' or 'Z' => Icons.Material.Filled.Map,
+            _ => Icons.Material.Filled.Person
+        };
+    }
+
+    private async Task Logout()
+    {
+        try
+        {
+            await LocalStorage.RemoveItemAsync("authToken");
+            await LocalStorage.RemoveItemAsync("email");
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logout error: {ex.Message}");
+            Snackbar.Add("An error occurred during logout.", Severity.Error);
+        }
     }
 }

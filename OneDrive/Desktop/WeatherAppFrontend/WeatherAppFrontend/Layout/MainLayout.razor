@@ -25,8 +25,8 @@
                 <MudSpacer />
 
                 <MudMenu Direction="Direction.BottomStart"
-                         AnchorOrigin="Origin.TopRight"
-                         TransformOrigin="Origin.TopRight"
+                         AnchorOrigin="Origin.BottomRight"
+                         TransformOrigin="Origin.BottomRight"
                          Class="user-info-glass custom-user-menu">
 
                     <ActivatorContent>
@@ -34,10 +34,12 @@
                         <MudText Typo="Typo.body2" Style="color: white; margin-left: 8px;">@userEmail</MudText>
                     </ActivatorContent>
                     <ChildContent>
+
                         <!-- Temporarily hidden old User Info option -->
                         <!-- <MudMenuItem OnClick="NavigateToUserInfo" Style="display: none;">
                             <MudText Typo="Typo.body1" Style="color: white;">User Info</MudText>
                         </MudMenuItem> -->
+
                         <MudMenuItem OnClick="NavigateToUserProfile">
                             <MudText Typo="Typo.body1" Style="color: white;">User Profile</MudText>
                         </MudMenuItem>
@@ -144,6 +146,8 @@
     }
 }
 
+<!-- ... (rest of the Razor code remains unchanged) ... -->
+
 <style>
     .user-info-glass {
         background: rgba(255, 255, 255, 0.1);
@@ -166,11 +170,13 @@
     }
 
     .mud-popover {
-        background: rgba(0, 0, 0, 0.7) !important;
-        backdrop-filter: blur(15px);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, rgba(50, 50, 70, 0.9), rgba(70, 70, 90, 0.9)) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 8px;
+        border: 1px solid rgba(100, 100, 120, 0.5);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        margin-top: 5px;
+        color: #e0e0ff;
     }
 
     .mud-menu-item {
@@ -179,7 +185,7 @@
     }
 
         .mud-menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(100, 100, 120, 0.3);
         }
 
     .main-layout {
@@ -189,7 +195,51 @@
 
     .content {
         padding-top: 64px;
-        height: calc(100vh - 64px);
         overflow-y: auto;
     }
+
+    .city-search-glass {
+        background: linear-gradient(135deg, rgba(50, 50, 70, 0.9), rgba(70, 70, 90, 0.9));
+        backdrop-filter: blur(10px);
+        border-radius: 8px;
+        border: 1px solid rgba(100, 100, 120, 0.5);
+        transition: all 0.3s ease;
+    }
+
+        .city-search-glass:hover {
+            border-color: rgba(120, 120, 140, 0.7);
+        }
+
+    .mud-autocomplete.mud-input-slot {
+        margin-top: 5px;
+        color: #e0e0ff;
+    }
+
+        .mud-autocomplete.mud-input-slot input {
+            color: #e0e0ff !important; /* Match input text color for consistency */
+        }
+
+    .mud-autocomplete-paper .mud-list {
+        padding: 0 !important; /* Remove default padding to control size */
+    }
+
+    .mud-autocomplete-paper .mud-list-item {
+        color: #e0e0ff !important; /* Light purple for better visibility on dark background */
+        padding: 8px 16px !important;
+        transition: background 0.2s ease !important;
+        min-height: 36px !important; /* Ensure consistent item height */
+        background: transparent !important; /* Ensure no unwanted background interferes */
+    }
+
+        .mud-autocomplete-paper .mud-list-item:hover {
+            background: rgba(255, 255, 255, 0.15) !important; /* Subtle hover effect */
+        }
+
+    .mud-list-item {
+        color: #e0e0ff;
+    }
+
+        .mud-list-item:hover {
+            background-color: rgba(100, 100, 120, 0.3);
+        }
 </style>
